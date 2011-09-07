@@ -185,7 +185,7 @@ public class Test extends Script {
                         } else {
                             changePrice = false;
                         }
-                        if (changeQuantity) {
+                        while (changeQuantity) {
                             if (Interfaces.getComponent(GE_INTERFACE, 167).getActions() != null && Interfaces.getComponent(GE_INTERFACE, 167).getActions().length >= 1) {
                                 Interfaces.getComponent(GE_INTERFACE, 167).click();
                                 Task.sleep(Task.random(700, 900));
@@ -204,7 +204,7 @@ public class Test extends Script {
                             }
                         }
                         log.severe("Quan: " +changeQuantity +" Price: " +changePrice);
-                        if (!changeQuantity && changePrice) {
+                        while (!changeQuantity && changePrice) {
                             Task.sleep(Task.random(700, 900));
                             if (Interfaces.getComponent(GE_INTERFACE).getComponent(177) != null) {
                                 Interfaces.getComponent(GE_INTERFACE).getComponent(177).click();
@@ -277,7 +277,7 @@ public class Test extends Script {
                     } else {
                         changePrice = false;
                     }
-                    if (changeQuantity) {
+                    while (changeQuantity) {
                         if (Interfaces.getComponent(GE_INTERFACE, 168).getActions() != null && Interfaces.getComponent(GE_INTERFACE, 168).getActions().length >= 1) {
                             Interfaces.getComponent(GE_INTERFACE, 168).click();
                             Task.sleep(Task.random(700, 900));
@@ -294,7 +294,7 @@ public class Test extends Script {
                             changeQuantity = false;
                         } 
                     }
-                    if (!changeQuantity && changePrice) {
+                    while (!changeQuantity && changePrice) {
                         Task.sleep(Task.random(700, 900));
                         if (Interfaces.getComponent(GE_INTERFACE).getComponent(177) != null) {
                             Interfaces.getComponent(GE_INTERFACE).getComponent(177).click();

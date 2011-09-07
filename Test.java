@@ -37,8 +37,9 @@ public class Test extends Script {
 //        }
         Ge.open();
         if (Ge.isOpen()) {
-            Ge.buy("Steel arrow", Ge.getEmptySlot(), 5, 20);
-            sleep(400);
+            int t = Ge.getEmptySlot();
+            log("t:" +t);
+            Ge.buy("Steel arrow", t, 5, 20, false);            
         }
         return 200;
     }
@@ -49,15 +50,20 @@ public class Test extends Script {
         public static final int GE_CLOSE = 14;
         public static final int SEARCH = 389;
         public static int SLOT = 0;
+        public static boolean Membs;
         
-        public static boolean buy(String itemName, int slotNumber, int quantity, int price) {
+        public static boolean buy(String itemName, int slotNumber, int quantity, int price, boolean members) {
             SLOT = slotNumber;
+            Membs = members;
             if (slotNumber == 0 || slotNumber > 5) {
                 return false;
             }
-            if (isOpen()) {              
+            if (isOpen()) {
+                log.severe("SlotNumber: " +SLOT);
                 int Interface = GEStuff.Stuff.Interface;
-                int buyClick = GEStuff.Stuff.buyClick;
+                int buyClick = 0;
+                GEMethods t = new GEStuff2(slotNumber);
+                buyClick = t.getBuyClick();
                 int sellClick = GEStuff.Stuff.sellClick;
                 log.severe("buyclick:" +buyClick);
                 if (!isSearching()) {
@@ -142,6 +148,7 @@ public class Test extends Script {
                                 Mouse.move(262, 297);
                                 Mouse.click(true);
                             }
+                            Ge.close();
                             return true;        
                         }
                     }                    
@@ -158,27 +165,30 @@ public class Test extends Script {
             if (isOpen()) {
                 for (int i = 1; i != 5;) {
                     SLOT = i;
-                    int check = GEStuff.Stuff.Interface;
+                    GEMethods check2 = new GEStuff2(i);
+                    int check = check2.getInterface();
                     if (Interfaces.getComponent(GE_INTERFACE, check).getComponent(10).getText().equals("Empty")) {
                         return i;
-                    }                
+                    }
+                    if (!Membs && i == 2) {
+                        return 0;
+                    }                    
                     i++;
                 }              
             }
             return 0;
-        }
-//            if (Interfaces.getComponent(GE_INTERFACE, 19).getComponent(10).getText().equals("Empty")) {
-//                return 1;
-//            } else if (Interfaces.getComponent(GE_INTERFACE, 35).getComponent(10).getText().equals("Empty")) {
-//                return 2;
-//            } else if (Interfaces.getComponent(GE_INTERFACE, 51).getComponent(10).getText().equals("Empty")) {
-//                return 3;
-//            } else if (Interfaces.getComponent(GE_INTERFACE, 70).getComponent(10).getText().equals("Empty")) {
-//                return 4;
-//            } else if (Interfaces.getComponent(GE_INTERFACE, 89).getComponent(10).getText().equals("Empty")) {
-//                return 5;
-//            }    
-        
+        }  
+//                if (Interfaces.getComponent(GE_INTERFACE, 19).getComponent(10).getText().equals("Empty")) {
+//                    return 1;
+//                } else if (Interfaces.getComponent(GE_INTERFACE, 35).getComponent(10).getText().equals("Empty")) {
+//                    return 2;
+//                } else if (Interfaces.getComponent(GE_INTERFACE, 51).getComponent(10).getText().equals("Empty")) {
+//                    return 3;
+//                } else if (Interfaces.getComponent(GE_INTERFACE, 70).getComponent(10).getText().equals("Empty")) {
+//                    return 4;
+//                } else if (Interfaces.getComponent(GE_INTERFACE, 89).getComponent(10).getText().equals("Empty")) {
+//                    return 5;
+//                }        
         /**Determines if there is an item by the name
          * 
          * @return <tt>true</tt> if an item was found; otherwise <tt>false</tt>
@@ -204,7 +214,7 @@ public class Test extends Script {
          * @return <tt>true</tt> if interface is valid; otherwise <tt>false</tt>
          */
         public static boolean isSearching() {
-            return Interfaces.getComponent(GE_INTERFACE, 134).isValid();
+            return Interfaces.getComponent(GE_INTERFACE, 134).isVisible();
         }
                 
         /**Checks whether the GE is open
@@ -315,46 +325,115 @@ public class Test extends Script {
         int sellClick;        
 
         GEStuff(int slot) {
-            switch (slot) {            
+            switch (SLOT) {            
                 case 1:
-                   Interface = 19;
-                   buyClick = 30;
-                   sellClick = 29;
+                   this.Interface = 19;
+                   this.buyClick = 30;
+                   this.sellClick = 29;
                    break;
 
                 case 2:
-                    Interface = 35;
-                    buyClick = 46;
-                    sellClick = 45;
+                    this.Interface = 35;
+                    this.buyClick = 46;
+                    this.sellClick = 45;
                     break;
 
                 case 3:
-                    Interface = 51;
-                    buyClick = 62;
-                    sellClick = 61;
+                    this.Interface = 51;
+                    this.buyClick = 62;
+                    this.sellClick = 61;
                     break;
 
                 case 4:
-                    Interface = 70;
-                    buyClick = 81;
-                    sellClick = 80;
+                    this.Interface = 70;
+                    this.buyClick = 81;
+                    this.sellClick = 80;
                     break;
 
                 case 5:
-                    Interface = 89;
-                    buyClick = 100;
-                    sellClick = 99;
+                    this.Interface = 89;
+                    this.buyClick = 100;
+                    this.sellClick = 99;
                     break;
 
                 case 6:
-                    Interface = 108;
-                    buyClick = 119;
-                    sellClick = 118;
+                    this.Interface = 108;
+                    this.buyClick = 119;
+                    this.sellClick = 118;
                     break;
-            }            
+            }
         }
     }
         
+        private static interface GEMethods {
+            public int getInterface();
+            
+            public int getBuyClick();
+            
+            public int getSellClick();
+        }
+        
+        private static class GEStuff2 implements GEMethods {
+            private int Interface = 0;
+            private int buyClick = 0;
+            private int sellClick = 0;
+            
+            public GEStuff2(int slot) {
+                switch (slot) {            
+                    case 1:
+                       this.Interface = 19;
+                       this.buyClick = 30;
+                       this.sellClick = 29;
+                       break;
+
+                    case 2:
+                        this.Interface = 35;
+                        this.buyClick = 46;
+                        this.sellClick = 45;
+                        break;
+
+                    case 3:
+                        this.Interface = 51;
+                        this.buyClick = 62;
+                        this.sellClick = 61;
+                        break;
+
+                    case 4:
+                        this.Interface = 70;
+                        this.buyClick = 81;
+                        this.sellClick = 80;
+                        break;
+
+                    case 5:
+                        this.Interface = 89;
+                        this.buyClick = 100;
+                        this.sellClick = 99;
+                        break;
+
+                    case 6:
+                        this.Interface = 108;
+                        this.buyClick = 119;
+                        this.sellClick = 118;
+                        break;
+                }
+            }
+            
+            @Override
+            public int getInterface() {
+                return this.Interface;
+            }
+
+            @Override
+            public int getBuyClick() {
+                return this.buyClick;
+            }
+
+            @Override
+            public int getSellClick() {
+                return this.sellClick;
+            }
+            
+        }
 	private static interface Interactable {
 		public int getDistance();
 

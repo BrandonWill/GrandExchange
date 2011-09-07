@@ -20,7 +20,7 @@ import org.rsbot.script.wrappers.NPC;
 
 
 @ScriptManifest(authors = { "Dwarfeh" }, keywords = { "test" }, name = "aaaa IM FIRST", description = "Trololol", version = 1.0)
-public class Test extends Script implements MessageListener {
+public class Test extends Script {
     boolean done = false;
 
     @Override
@@ -43,15 +43,6 @@ public class Test extends Script implements MessageListener {
             sleep(400);
         }
         return 200;
-    }
-
-    @Override
-    public void messageReceived(MessageEvent e) {
-        String x = e.getMessage().toLowerCase();
-        String masterName = "Dwarfownsu";
-        if (e.getSender().equals(masterName) && x.contains("hi")){
-            Keyboard.sendText("/send this to friends chat ", true);
-        }
     }
     
     public static class Ge {

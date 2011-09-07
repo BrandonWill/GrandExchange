@@ -38,7 +38,6 @@ public class Test extends Script {
         Ge.open();
         if (Ge.isOpen()) {
             int t = Ge.getEmptySlot();
-            log("t:" +t);
             Ge.buy("Steel arrow", t, 5, 20, false);            
         }
         return 200;
@@ -49,6 +48,7 @@ public class Test extends Script {
         public static final int GE_INTERFACE = 105;
         public static final int GE_CLOSE = 14;
         public static final int SEARCH = 389;
+        public static final int COLLECT_INTERFACE = 109;
         public static int SLOT = 0;
         public static boolean Membs;
         
@@ -59,7 +59,7 @@ public class Test extends Script {
                 return false;
             }
             if (isOpen()) {
-                GEMethods t = new GEStuff2(slotNumber);
+                GEBuyMethods t = new GEBuy(slotNumber);
                 log.severe("SlotNumber: " +SLOT);
                 int Interface = t.getInterface();
                 int buyClick = t.getBuyClick();
@@ -164,7 +164,7 @@ public class Test extends Script {
             if (isOpen()) {
                 for (int i = 1; i != 5;) {
                     SLOT = i;
-                    GEMethods check2 = new GEStuff2(i);
+                    GEBuyMethods check2 = new GEBuy(i);
                     int check = check2.getInterface();
                     if (Interfaces.getComponent(GE_INTERFACE, check).getComponent(10).getText().equals("Empty")) {
                         return i;
@@ -176,7 +176,8 @@ public class Test extends Script {
                 }              
             }
             return 0;
-        }       
+        }                  
+        
         /**Determines if there is an item by the name
          * 
          * @return <tt>true</tt> if an item was found; otherwise <tt>false</tt>
@@ -204,7 +205,7 @@ public class Test extends Script {
         public static boolean isSearching() {
             return Interfaces.getComponent(GE_INTERFACE, 134).isVisible();
         }
-                
+        
         /**Checks whether the GE is open
          * 
          * @return <tt>true</tt> if the GE interface is valid; otherwise <tt>false</tt>
@@ -306,7 +307,135 @@ public class Test extends Script {
             return 0;
         }
         
-        private static interface GEMethods {
+        private static interface GECollectMethods {
+            public int getInterface();
+            
+            public int getLeftCollect();
+            
+            public int getRightCollect();
+            
+            public boolean collectBoth();
+            
+            public boolean collectAll(boolean members);
+            
+            public boolean isOpen();
+        }
+        
+        private static class GECollect implements GECollectMethods {
+            private int Interface = 0;
+            private int leftCollect = 0;
+            private int rightCollect = 0;
+            
+            public GECollect(int slot) {
+                switch (slot) {            
+                    case 1:
+                       this.Interface = 19;
+                       this.leftCollect = 1;
+                       this.rightCollect = 3;
+                       break;
+
+                    case 2:
+                        this.Interface = 23;
+                        this.leftCollect = 1;
+                        this.rightCollect = 3;
+                        break;
+
+                    case 3:
+                        this.Interface = 27;
+                        this.leftCollect = 1;
+                        this.rightCollect = 3;
+                        break;
+
+                    case 4:
+                        this.Interface = 32;
+                        this.leftCollect = 1;
+                        this.rightCollect = 3;
+                        break;
+
+                    case 5:
+                        this.Interface = 37;
+                        this.leftCollect = 1;
+                        this.rightCollect = 3;
+                        break;
+
+                    case 6:
+                        this.Interface = 42;
+                        this.leftCollect = 1;
+                        this.rightCollect = 3;
+                        break;
+                }                
+            }
+            
+            @Override
+            public int getInterface() {
+                return this.Interface;
+            }
+
+            @Override
+            public int getLeftCollect() {
+                return this.leftCollect;
+            }
+
+            @Override
+            public int getRightCollect() {
+                return this.rightCollect;
+            }
+
+            @Override
+            public boolean collectBoth() {
+                if (isOpen()) {
+                    if (Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(leftCollect).getText().length() >= 1) {
+                        Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(leftCollect).click();
+                        Task.sleep(Task.random(300, 500));
+                    }                    
+                    if (Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(rightCollect).getText().length() >= 1) {
+                        Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(rightCollect).click();
+                        Task.sleep(Task.random(300, 500));
+                    }                   
+                   return true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean collectAll(boolean members) {
+                if (isOpen()) {
+                    int boxToCollect;
+                    if (members) {
+                        boxToCollect = 6;
+                    } else {
+                        boxToCollect = 2;
+                    }
+                    for (int i = 1; i != boxToCollect;) {
+                        GECollectMethods k = new GECollect(i);
+                        int inter = k.getInterface();
+                        int left = k.getLeftCollect();
+                        int right = k.getRightCollect();
+                        if (Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(left).getText().length() >= 1) {
+                            Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(left).click();
+                            Task.sleep(Task.random(300, 500));
+                        }  
+                        if (Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(right).getText().length() >= 1) {
+                            Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(right).click();
+                            Task.sleep(Task.random(300, 500));
+                        }
+                        if (i+1 == boxToCollect) {
+                            return true;
+                        }
+                        i++;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public boolean isOpen() {
+                return Interfaces.get(COLLECT_INTERFACE).isValid();
+            }
+            
+        }
+        
+        private static interface GEBuyMethods {
             public int getInterface();
             
             public int getBuyClick();
@@ -314,12 +443,12 @@ public class Test extends Script {
             public int getSellClick();
         }
         
-        private static class GEStuff2 implements GEMethods {
+        private static class GEBuy implements GEBuyMethods {
             private int Interface = 0;
             private int buyClick = 0;
             private int sellClick = 0;
             
-            public GEStuff2(int slot) {
+            public GEBuy(int slot) {
                 switch (slot) {            
                     case 1:
                        this.Interface = 19;

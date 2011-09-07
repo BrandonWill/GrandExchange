@@ -1,8 +1,11 @@
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.rsbot.script.Script;
 import org.rsbot.script.ScriptManifest;
 import org.rsbot.script.concurrent.Task;
@@ -51,6 +54,11 @@ public class Test extends Script {
         public static final int COLLECT_INTERFACE = 109;
         public static int SLOT = 0;
         public static boolean Membs;
+     
+        private static final Pattern PATTERN = Pattern.compile("(?i)<td><img src=\".+obj_sprite\\.gif\\?id=(\\d+)\" alt=\"(.+)\"");        
+
+	private static final String HOST = "http://services.runescape.com";
+	private static final String GET = "/m=itemdb_rs/viewitem.ws?obj=";
         
         public static boolean buy(String itemName, int slotNumber, int quantity, int price, boolean members) {
             SLOT = slotNumber;
@@ -269,43 +277,223 @@ public class Test extends Script {
             return true;
         }       
         
-        public static int getPrice(String name) {
-            try {
-                name = name.replace(' ', '+');
-                if (!Character.isUpperCase(name.charAt(0))) {
-                    Character.toUpperCase(name.charAt(0));
-                }
-                URL url = new URL("http://rscript.org/lookup.php?type=ge&search=" + name);
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                String inputLine;            
-                int lineIndex = 0;
-                while ((inputLine = in.readLine()) != null) {
-                    if (inputLine.contains(name.replace('+', '_')) && lineIndex >= 8) {
-                        String words[] = inputLine.toString().split(" ");  
-                        return Integer.parseInt(words[4]);                    
-                    }
-                }
-            } catch (Exception e) {
-            }
-        return 0;
-        }
+	/**
+	 * Gets the name of the given item ID. Should not be used.
+	 *
+	 * @param itemID The item ID to look for.
+	 * @return The name of the given item ID or an empty String if unavailable.
+	 * @see GrandExchange#lookup(int)
+	 */
+	public String getItemName(final int itemID) {
+		final GEItem geItem = lookup(itemID);
+		if (geItem != null) {
+			return geItem.getName();
+		}
+		return "";
+	}
+
+	/**
+	 * Gets the ID of the given item name. Should not be used.
+	 *
+	 * @param itemName The name of the item to look for.
+	 * @return The ID of the given item name or -1 if unavailable.
+	 * @see GrandExchange#lookup(java.lang.String)
+	 */
+	public int getItemID(final String itemName) {
+		final GEItem geItem = lookup(itemName);
+		if (geItem != null) {
+			return geItem.getID();
+		}
+		return -1;
+	}
         
-        public static int getPrice(int id) {
-            try {
-                URL url = new URL("http://rscript.org/lookup.php?type=ge&search=" + id);
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                String inputLine;            
-                int lineIndex = 0;
-                while ((inputLine = in.readLine()) != null) {
-                    if (lineIndex == 8 && inputLine.contains("ITEM:")) {
-                        String words[] = inputLine.toString().split(" ");  
-                        return Integer.parseInt(words[4]);                
-                    }
-                }
-            } catch (Exception e) {
-            }
-            return 0;
-        }
+	/**
+	 * Collects data for a given item ID from the Grand Exchange website.
+	 *
+	 * @param itemID The item ID.
+	 * @return An instance of GrandExchange.GEItem; <code>null</code> if unable
+	 *         to fetch data.
+	 */
+	public GEItem lookup(final int itemID) {
+		try {
+                    
+			final URL url = new URL(Ge.HOST + Ge.GET + itemID);
+			final BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+			String input;
+			boolean exists = false;
+			int i = 0;
+			final double[] values = new double[4];
+			String name = "", examine = "";
+			while ((input = br.readLine()) != null) {
+				if (input.contains("<div class=\"brown_box main_ge_page") && !exists) {
+					if (!input.contains("vertically_spaced")) {
+						return null;
+					}
+					exists = true;
+					br.readLine();
+					br.readLine();
+					name = br.readLine();
+				} else if (input.contains("<img id=\"item_image\" src=\"")) {
+					examine = br.readLine();
+				} else if (input.matches("(?i).+ (price|days):</b> .+")) {
+					values[i] = parse(input);
+					i++;
+				} else if (input.matches("<div id=\"legend\">")) {
+					break;
+				}
+			}
+			return new GEItem(name, examine, itemID, values);
+		} catch (final IOException ignore) {
+		}
+		return null;
+	}
+
+	/**
+	 * Collects data for a given item name from the Grand Exchange website.
+	 *
+	 * @param itemName The name of the item.
+	 * @return An instance of GrandExchange.GEItem; <code>null</code> if unable
+	 *         to fetch data.
+	 */
+	public GEItem lookup(final String itemName) {
+		try {
+			final URL url = new URL(Ge.HOST + "/m=itemdb_rs/results.ws?query=" + itemName + "&price=all&members=");
+			final BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+			String input;
+			while ((input = br.readLine()) != null) {
+				if (input.contains("<div id=\"search_results_text\">")) {
+					input = br.readLine();
+					if (input.contains("Your search for")) {
+						return null;
+					}
+				} else if (input.startsWith("<td><img src=")) {
+					final Matcher matcher = Ge.PATTERN.matcher(input);
+					if (matcher.find()) {
+						if (matcher.group(2).contains(itemName)) {
+							return lookup(Integer.parseInt(matcher.group(1)));
+						}
+					}
+				}
+			}
+		} catch (final IOException ignored) {
+		}
+		return null;
+	}
+
+	private double parse(String str) {
+		if (str != null && !str.isEmpty()) {
+			str = stripFormatting(str);
+			str = str.substring(str.indexOf(58) + 2, str.length());
+			str = str.replace(",", "");
+			str = str.trim();
+			if (!str.endsWith("%")) {
+				if (!str.endsWith("k") && !str.endsWith("m") && !str.endsWith("b")) {
+					return Double.parseDouble(str);
+				}
+				return Double.parseDouble(str.substring(0, str.length() - 1)) * (str.endsWith("b") ? 1000000000 : str.endsWith("m") ? 1000000 : 1000);
+			}
+			final int k = str.startsWith("+") ? 1 : -1;
+			str = str.substring(1);
+			return Double.parseDouble(str.substring(0, str.length() - 1)) * k;
+		}
+		return -1D;
+	}
+
+	private String stripFormatting(final String str) {
+		if (str != null && !str.isEmpty()) {
+			return str.replaceAll("(^[^<]+>|<[^>]+>|<[^>]+$)", "");
+		}
+		return "";
+	}
+
+	/**
+	 * Provides access to GEItem Information.
+	 */
+	public static class GEItem {               
+		private final String name;
+		private final String examine;
+
+		private final int id;
+
+		private final int guidePrice;
+
+		private final double change30;
+		private final double change90;
+		private final double change180;
+
+		GEItem(final String name, final String examine, final int id, final double[] values) {
+			this.name = name;
+			this.examine = examine;
+			this.id = id;
+			guidePrice = (int) values[0];
+			change30 = values[1];
+			change90 = values[2];
+			change180 = values[3];
+		}
+
+		/**
+		 * Gets the change in price for the last 30 days of this item.
+		 *
+		 * @return The change in price for the last 30 days of this item.
+		 */
+		public double getChange30Days() {
+			return change30;
+		}
+
+		/**
+		 * Gets the change in price for the last 90 days of this item.
+		 *
+		 * @return The change in price for the last 90 days of this item.
+		 */
+		public double getChange90Days() {
+			return change90;
+		}
+
+		/**
+		 * Gets the change in price for the last 180 days of this item.
+		 *
+		 * @return The change in price for the last 180 days of this item.
+		 */
+		public double getChange180Days() {
+			return change180;
+		}
+
+		/**
+		 * Gets the ID of this item.
+		 *
+		 * @return The ID of this item.
+		 */
+		public int getID() {
+			return id;
+		}
+
+		/**
+		 * Gets the market price of this item.
+		 *
+		 * @return The market price of this item.
+		 */
+		public int getGuidePrice() {
+			return guidePrice;
+		}
+
+		/**
+		 * Gets the name of this item.
+		 *
+		 * @return The name of this item.
+		 */
+		public String getName() {
+			return name;
+		}
+
+		/**
+		 * Gets the description of this item.
+		 *
+		 * @return The description of this item.
+		 */
+		public String getDescription() {
+			return examine;
+		}
+	}
         
         private static interface GECollectMethods {
             public int getInterface();
@@ -544,4 +732,3 @@ public class Test extends Script {
 	}         
     }  
 }
-

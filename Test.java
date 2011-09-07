@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -43,15 +42,6 @@ public class Test extends Script implements MessageListener {
             sleep(400);
         }
         return 200;
-    }
-
-    @Override
-    public void messageReceived(MessageEvent e) {
-        String x = e.getMessage().toLowerCase();
-        String masterName = "Dwarfownsu";
-        if (e.getSender().equals(masterName) && x.contains("hi")){
-            Keyboard.sendText("/send this to friends chat ", true);
-        }
     }
     
     public static class Ge {

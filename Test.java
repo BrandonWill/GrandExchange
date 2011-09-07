@@ -59,12 +59,11 @@ public class Test extends Script {
                 return false;
             }
             if (isOpen()) {
-                log.severe("SlotNumber: " +SLOT);
-                int Interface = GEStuff.Stuff.Interface;
-                int buyClick = 0;
                 GEMethods t = new GEStuff2(slotNumber);
-                buyClick = t.getBuyClick();
-                int sellClick = GEStuff.Stuff.sellClick;
+                log.severe("SlotNumber: " +SLOT);
+                int Interface = t.getInterface();
+                int buyClick = t.getBuyClick();
+                int sellClick = t.getSellClick();
                 log.severe("buyclick:" +buyClick);
                 if (!isSearching()) {
                     Interfaces.getComponent(GE_INTERFACE, buyClick).click();
@@ -177,18 +176,7 @@ public class Test extends Script {
                 }              
             }
             return 0;
-        }  
-//                if (Interfaces.getComponent(GE_INTERFACE, 19).getComponent(10).getText().equals("Empty")) {
-//                    return 1;
-//                } else if (Interfaces.getComponent(GE_INTERFACE, 35).getComponent(10).getText().equals("Empty")) {
-//                    return 2;
-//                } else if (Interfaces.getComponent(GE_INTERFACE, 51).getComponent(10).getText().equals("Empty")) {
-//                    return 3;
-//                } else if (Interfaces.getComponent(GE_INTERFACE, 70).getComponent(10).getText().equals("Empty")) {
-//                    return 4;
-//                } else if (Interfaces.getComponent(GE_INTERFACE, 89).getComponent(10).getText().equals("Empty")) {
-//                    return 5;
-//                }        
+        }       
         /**Determines if there is an item by the name
          * 
          * @return <tt>true</tt> if an item was found; otherwise <tt>false</tt>
@@ -317,53 +305,6 @@ public class Test extends Script {
             }
             return 0;
         }
-
-    private enum GEStuff {
-        Stuff(SLOT);
-        int Interface;
-        int buyClick;
-        int sellClick;        
-
-        GEStuff(int slot) {
-            switch (SLOT) {            
-                case 1:
-                   this.Interface = 19;
-                   this.buyClick = 30;
-                   this.sellClick = 29;
-                   break;
-
-                case 2:
-                    this.Interface = 35;
-                    this.buyClick = 46;
-                    this.sellClick = 45;
-                    break;
-
-                case 3:
-                    this.Interface = 51;
-                    this.buyClick = 62;
-                    this.sellClick = 61;
-                    break;
-
-                case 4:
-                    this.Interface = 70;
-                    this.buyClick = 81;
-                    this.sellClick = 80;
-                    break;
-
-                case 5:
-                    this.Interface = 89;
-                    this.buyClick = 100;
-                    this.sellClick = 99;
-                    break;
-
-                case 6:
-                    this.Interface = 108;
-                    this.buyClick = 119;
-                    this.sellClick = 118;
-                    break;
-            }
-        }
-    }
         
         private static interface GEMethods {
             public int getInterface();

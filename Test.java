@@ -40,11 +40,11 @@ public class Test extends Script {
 //        if (done) {
 //          sleep(100);
 //        }
-        Ge.GECollectMethods mhm = new Ge.GECollect();
-        if (!mhm.isOpen()) {
-            Ge.open();
+        if (!Ge.collectIsOpen()) {
+            Ge.collectClose();
         }
-        if (Ge.isOpen()) {
+        Ge.open();
+        if (Ge.isOpen()) {            
             int t = Ge.getEmptySlot();
             if (t >0) {
                 Ge.buy("Steel arrow", t, 5, 19);
@@ -52,16 +52,20 @@ public class Test extends Script {
 //                    Ge.close();   
 //                }
             } else {
-                for(int i = 1; i < Ge.getTotalSlots();) {
-                    Ge.GECollectMethods xD = new Ge.GECollect(i);
-                    if (Ge.isOpen()) {
-                        Ge.close();
-                    }
-                    if (!xD.isOpen()) {
-                        xD.open();
-                    }
-                    if (xD.isOpen()) {
-                        xD.collectAll();
+                for(int i = 1; i <= Ge.getTotalSlots();) {
+                    log("isOfferCompleted for " +i +" :" +Ge.isOfferCompleted(i));
+                    Mouse.moveSlightly();
+                    Task.sleep(Task.random(700, 1000));                    
+                    if (Ge.isOfferCompleted(i)) {
+                        if (Ge.isOpen()) {
+                            Ge.close();
+                        }
+                        if (!Ge.collectIsOpen()) {
+                            Ge.collectOpen();
+                        }
+                        if (Ge.collectIsOpen()) {
+                            Ge.collectAllCollection();
+                        }
                     }
                     i++;
                 }
@@ -97,12 +101,12 @@ public class Test extends Script {
                     log.severe("Not searching, clicking!");
                     Task.sleep(Task.random(700, 900));
                 }
-                if (isSearching() && !hasSearched()) {
+                if (isSearching() && !hasSearched(itemName)) {
                     Keyboard.sendTextInstant(itemName, true);
                     log.severe("searching, has not searched!");
-                    Task.sleep(Task.random(700, 900));
+                    Task.sleep(Task.random(1000, 1500));
                 }
-                if (isSearching() && hasSearched()) {
+                if (isSearching() && hasSearched(itemName)) {
                     boolean foundItem = false;
                     if (findItem() && !foundItem) {
                         boolean done = false;
@@ -149,10 +153,12 @@ public class Test extends Script {
                                 Mouse.move(237, 222);
                                 Mouse.click(true);
                                 Task.sleep(Task.random(700, 900));
+                            }
+                            if (Interfaces.getComponent(752, 4).getText().contains("you wish to purchase")) {
+                                Keyboard.sendTextInstant("" +quantity, true);
                             }                            
-                            Keyboard.sendTextInstant("" +quantity, true);
-                            Task.sleep(Task.random(700, 900));
-                            if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().equals("" +quantity)) {
+                            Task.sleep(Task.random(1000, 2000));
+                            if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains("" +quantity)) {
                                 changeQuantity = false;
                             }
                         }
@@ -165,10 +171,12 @@ public class Test extends Script {
                                 Mouse.move(387, 222);
                                 Mouse.click(true);
                                 Task.sleep(Task.random(700, 900));
-                            }                            
-                            Keyboard.sendTextInstant("" +price, true);
-                            Task.sleep(Task.random(700, 900));
-                            if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().equals("" +price +" gp")) {
+                            }
+                            if (Interfaces.getComponent(752, 4).getText().contains("you wish to buy")) {
+                                Keyboard.sendTextInstant("" +price, true);
+                            }
+                            Task.sleep(Task.random(1000, 2000));
+                            if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains("" +price)) {
                                 changePrice = false;
                             }                              
                         }
@@ -236,7 +244,9 @@ public class Test extends Script {
                             Mouse.click(true);
                             Task.sleep(Task.random(700, 900));
                         }                        
-                        Keyboard.sendTextInstant("" +quantity, true);
+                        if (Interfaces.getComponent(752, 4).getText().contains("you wish to purchase")) {
+                            Keyboard.sendTextInstant("" +quantity, true);
+                        }   
                         if (Interfaces.getComponent(GE_INTERFACE).getComponent(148).getText() != null && Integer.parseInt(Interfaces.getComponent(GE_INTERFACE, 148).getText()) == quantity) {
                             changeQuantity = false;
                         }
@@ -251,7 +261,9 @@ public class Test extends Script {
                             Mouse.click(true);
                             Task.sleep(Task.random(700, 900));
                         }
-                        Keyboard.sendTextInstant("" +price, true);
+                        if (Interfaces.getComponent(752, 4).getText().contains("you wish to buy")) {
+                            Keyboard.sendTextInstant("" +price, true);
+                        }
                         Task.sleep(Task.random(700, 900));
                         if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().equals("" +price +" gp")) {
                             changePrice = false;
@@ -303,8 +315,10 @@ public class Test extends Script {
         public static boolean isSlotEmpty(int slot) {
             GEBuyMethods check2 = new GEBuy(slot);
             int check = check2.getInterface();
-            if (Interfaces.getComponent(GE_INTERFACE, check).getComponent(10).getText().equals("Empty")) {
-                return true;
+            if (isOpen()) {
+                if (Interfaces.getComponent(GE_INTERFACE, check).getComponent(10).getText().equals("Empty")) {
+                    return true;
+                }
             }
             return false;
         }
@@ -331,20 +345,30 @@ public class Test extends Script {
             return 0;
         }                  
         
+        public static boolean isOfferCompleted(int slot) {
+            GEBuyMethods check2 = new GEBuy(slot);
+            return check2.isOfferCompleted(slot);
+        }
         /**Determines if there is an item by the name
          * 
          * @return <tt>true</tt> if an item was found; otherwise <tt>false</tt>
          */
         public static boolean findItem() {
-            return !Interfaces.getComponent(SEARCH, 4).getComponent(0).getText().equals("No matching items found.");
+            return Interfaces.getComponent(SEARCH, 4).getComponent(0) != null && Interfaces.getComponent(SEARCH, 4).getComponent(0).getText() != null && !Interfaces.getComponent(SEARCH, 4).getComponent(0).getText().equals("No matching items found.");
         }
         
         /**Determines if the person has searched or not
          * 
          * @return <tt>true</tt> if they have searched; otherwise <tt>false</tt>
          */
-        public static boolean hasSearched() {
-            return Interfaces.getComponent(SEARCH, 4).getComponent(1) != null;
+        public static boolean hasSearched(String itemName) {
+            if (!Character.isUpperCase(itemName.charAt(0))) {
+                Character.toUpperCase(itemName.charAt(0));
+            }
+            if (Interfaces.getComponent(GE_INTERFACE, 142).getText().contains(itemName)) {
+                return true;
+            }            
+            return Interfaces.getComponent(SEARCH, 4).getComponent(1) != null && Interfaces.getComponent(SEARCH, 9).getText().contains(itemName);
         }
         
         /**Determines if the player is searching
@@ -425,7 +449,7 @@ public class Test extends Script {
          * 
          * @return <tt>true</tt> if opened successfully; otherwise <tt>false</tt>
          */
-        public static boolean openCollection() {
+        public static boolean collectOpen() {
             Ge.GECollectMethods collect = new Ge.GECollect();
             return collect.open();
         }
@@ -434,7 +458,7 @@ public class Test extends Script {
          * 
          * @return <tt>true</tt> if closed successfully; otherwise <tt>false</tt>
          */
-        public static boolean closeCollection() {
+        public static boolean collectClose() {
             Ge.GECollectMethods collect = new Ge.GECollect();
             return collect.close();
         }        
@@ -443,7 +467,7 @@ public class Test extends Script {
          * 
          * @return <tt>true</tt> if opened; otherwise <tt>false</tt>
          */
-        public static boolean isCollectionOpen() {
+        public static boolean collectIsOpen() {
             Ge.GECollectMethods collect = new Ge.GECollect();
             return collect.isOpen();
         }        
@@ -896,6 +920,8 @@ public class Test extends Script {
             public int getBuyClick();
             
             public int getSellClick();
+            
+            public boolean isOfferCompleted(int slotNumber);
         }
         
         private static class GEBuy implements GEBuyMethods {
@@ -956,6 +982,19 @@ public class Test extends Script {
             @Override
             public int getSellClick() {
                 return this.sellClick;
+            }
+
+            @Override
+            public boolean isOfferCompleted(int slot) {
+                if (Ge.isOpen()) {
+                    if (Interfaces.getComponent(GE_INTERFACE, getInterface()).getComponent(13) != null && Interfaces.getComponent(GE_INTERFACE, getInterface()).getComponent(13).getHeight() != 13 && Interfaces.getComponent(GE_INTERFACE, getInterface()).getComponent(13).getWidth() != 124) {
+                        return false;
+                    }
+                    if (Interfaces.getComponent(GE_INTERFACE, getInterface()).getComponent(13) != null && Interfaces.getComponent(GE_INTERFACE, getInterface()).getComponent(13).getHeight() == 13 && Interfaces.getComponent(GE_INTERFACE, getInterface()).getComponent(13).getWidth() == 124) {
+                        return true;
+                    }                    
+                }
+                return false;                
             }
             
         }

@@ -2,26 +2,17 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.logging.Level;
-import org.rsbot.bot.event.events.MessageEvent;
-import org.rsbot.script.Script;
-import org.rsbot.script.ScriptManifest;
 import org.rsbot.script.concurrent.Task;
-import org.rsbot.script.internal.event.MessageListener;
 import org.rsbot.script.methods.Calculations;
 import org.rsbot.script.methods.Keyboard;
 import org.rsbot.script.methods.Menu;
 import org.rsbot.script.methods.Mouse;
 import org.rsbot.script.methods.NPCs;
 import org.rsbot.script.methods.Players;
-import org.rsbot.script.methods.tabs.Combat;
 import org.rsbot.script.methods.ui.Interfaces;
 import org.rsbot.script.wrappers.Interface;
-import org.rsbot.script.wrappers.Item;
 import org.rsbot.script.wrappers.NPC;
 
-
-@ScriptManifest(authors = { "Dwarfeh" }, keywords = { "test" }, name = "aaaa IM FIRST", description = "Trololol", version = 1.0)
 public class GrandExchange {
     boolean done = false;
     public static final int[] CLERKS = new int[]{2241, 2240, 2593, 1419};

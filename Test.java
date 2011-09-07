@@ -3,6 +3,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.rsbot.gui.AccountManager;
@@ -25,7 +26,23 @@ import org.rsbot.script.wrappers.NPC;
 @ScriptManifest(authors = { "Dwarfeh" }, keywords = { "test" }, name = "aaaa IM FIRST", description = "Trololol", version = 1.0)
 public class Test extends Script {
     boolean done = false;
-
+    int buyPrice = 19;
+    int buyAmount = 500;
+    String item23 = "Steel arrow";
+    
+    public boolean canBuy() {
+      Item Coins = Inventory.getItem(995);
+      if (Inventory.contains(995)) {
+        if (Coins.getStackSize() >= buyPrice*buyAmount) { 
+            return true;
+        }
+        if (Coins.getStackSize() < buyPrice*buyAmount) { 
+            return false; 
+        } 
+      }
+      return false;
+    }   
+    
     @Override
     public int loop() {
 //        if (!done) {
@@ -42,21 +59,44 @@ public class Test extends Script {
 //        }
         if (!Ge.collectIsOpen()) {
             Ge.collectClose();
+        }        
+        if (!Ge.isOpen()) {
+            Ge.open();
         }
-        Ge.open();
         if (Ge.isOpen()) {            
             int t = Ge.getEmptySlot();
             if (t >0) {
-                Ge.buy("Steel arrow", t, 5, 19);
-//                if (!Ge.sell("Steel arrow", t, 0, 20)) {
-//                    Ge.close();   
-//                }
+                if (canBuy()) {
+                    Item Coins = Inventory.getItem(995);
+                    buyAmount = Coins.getStackSize()/buyPrice;
+                    Ge.buy(item23, t, buyAmount, buyPrice);
+                }
+                if (!canBuy() && Inventory.contains(item23)) {
+                    Ge.sell(item23, t, 0, 20); 
+                }
+                if (!canBuy() && !Inventory.contains(item23)) {
+                    for(int i = 1; i <= Ge.getTotalSlots();) {
+                        Mouse.moveSlightly();
+                        Task.sleep(Task.random(700, 1000));                    
+                        if (Ge.isOfferCompleted()) {
+                            if (Ge.isOpen()) {
+                                Ge.close();
+                            }
+                            if (!Ge.collectIsOpen()) {
+                                Ge.collectOpen();
+                            }
+                            if (Ge.collectIsOpen()) {
+                                Ge.collectAllCollection();
+                            }
+                        }
+                        i++;
+                    }
+                }                
             } else {
                 for(int i = 1; i <= Ge.getTotalSlots();) {
-                    log("isOfferCompleted for " +i +" :" +Ge.isOfferCompleted(i));
                     Mouse.moveSlightly();
                     Task.sleep(Task.random(700, 1000));                    
-                    if (Ge.isOfferCompleted(i)) {
+                    if (Ge.isOfferCompleted()) {
                         if (Ge.isOpen()) {
                             Ge.close();
                         }
@@ -158,10 +198,12 @@ public class Test extends Script {
                                 Keyboard.sendTextInstant("" +quantity, true);
                             }                            
                             Task.sleep(Task.random(1000, 2000));
-                            if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains("" +quantity)) {
+                            if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains("" +formatNumb(quantity))) {
                                 changeQuantity = false;
+                                Task.sleep(Task.random(700, 900));
                             }
                         }
+                        log.severe("Quan: " +changeQuantity +" Price: " +changePrice);
                         if (!changeQuantity && changePrice) {
                             Task.sleep(Task.random(700, 900));
                             if (Interfaces.getComponent(GE_INTERFACE).getComponent(177) != null) {
@@ -176,8 +218,9 @@ public class Test extends Script {
                                 Keyboard.sendTextInstant("" +price, true);
                             }
                             Task.sleep(Task.random(1000, 2000));
-                            if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains("" +price)) {
+                            if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains("" +formatNumb(price))) {
                                 changePrice = false;
+                                Task.sleep(Task.random(700, 900));
                             }                              
                         }
                         if (!changeQuantity && !changePrice) {
@@ -196,12 +239,15 @@ public class Test extends Script {
             }
             return false;
         }
-
+        
         public static boolean sell(String itemName, int slotNumber, int quantity, int price) {
             SLOT = slotNumber;
             if (slotNumber == 0 || slotNumber > 5) {
                 return false;
             }
+            if (!Inventory.contains(itemName)) {
+                return false;
+            }            
             if (isOpen()) {
                 GEBuyMethods t = new GEBuy(slotNumber);
                 int sellClick = t.getSellClick();
@@ -214,11 +260,7 @@ public class Test extends Script {
                     offerItem = true;                    
                 }
                 if (!isSelling() && offerItem) {
-                    if (Inventory.contains(itemName)) {
-                        Inventory.getItem(itemName).click(true);
-                    } else {
-                        return false;
-                    }
+                    Inventory.getItem(itemName).click(true);
                     Task.sleep(Task.random(300, 500));
                     offeredItem = true;
                 }
@@ -244,12 +286,13 @@ public class Test extends Script {
                             Mouse.click(true);
                             Task.sleep(Task.random(700, 900));
                         }                        
-                        if (Interfaces.getComponent(752, 4).getText().contains("you wish to purchase")) {
+                        if (Interfaces.getComponent(752, 4).getText().contains("amount you wish to")) {
                             Keyboard.sendTextInstant("" +quantity, true);
-                        }   
-                        if (Interfaces.getComponent(GE_INTERFACE).getComponent(148).getText() != null && Integer.parseInt(Interfaces.getComponent(GE_INTERFACE, 148).getText()) == quantity) {
-                            changeQuantity = false;
                         }
+                        Task.sleep(Task.random(1000, 2000));
+                        if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains("" +formatNumb(quantity))) {
+                            changeQuantity = false;
+                        } 
                     }
                     if (!changeQuantity && changePrice) {
                         Task.sleep(Task.random(700, 900));
@@ -261,12 +304,13 @@ public class Test extends Script {
                             Mouse.click(true);
                             Task.sleep(Task.random(700, 900));
                         }
-                        if (Interfaces.getComponent(752, 4).getText().contains("you wish to buy")) {
+                        if (Interfaces.getComponent(752, 4).getText().contains("you wish to sell")) {
                             Keyboard.sendTextInstant("" +price, true);
                         }
-                        Task.sleep(Task.random(700, 900));
-                        if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().equals("" +price +" gp")) {
+                        Task.sleep(Task.random(1000, 2000));
+                        if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains("" +formatNumb(price))) {
                             changePrice = false;
+                            Task.sleep(Task.random(500, 700));
                         }                            
                     }
                     if (!changeQuantity && !changePrice) {
@@ -289,7 +333,14 @@ public class Test extends Script {
             return Interfaces.getComponent(GE_INTERFACE, 142).isValid() && !Interfaces.getComponent(GE_INTERFACE, 142).getText().equals("Choose an item to exchange");
         }
                 
-                
+        /**Sets the number format as the same as GrandExchange's
+         * 
+         * @return number to match GrandExchange's
+         */
+        public static String formatNumb(long money) {
+            return new DecimalFormat("###,###,###,###,###,###").format(money);
+	}
+        
         /**Determines membership
          * 
          * @return <tt>true</tt> if members is selected for the account; otherwise <tt>false</tt>
@@ -312,6 +363,11 @@ public class Test extends Script {
             return 2;
         }
         
+        /**Checks to see if the GE slot is empty
+         * 
+         * @param slot gets the correct interface
+         * @return <tt>true</tt> if empty; otherwise <tt>false</tt>
+         */
         public static boolean isSlotEmpty(int slot) {
             GEBuyMethods check2 = new GEBuy(slot);
             int check = check2.getInterface();
@@ -345,10 +401,15 @@ public class Test extends Script {
             return 0;
         }                  
         
-        public static boolean isOfferCompleted(int slot) {
-            GEBuyMethods check2 = new GEBuy(slot);
-            return check2.isOfferCompleted(slot);
+        /**Determines if an offer is completed or not
+         * 
+         * @return <tt>true</tt> if an offer is completed; otherwise <tt>false</tt>
+         */
+        public static boolean isOfferCompleted() {
+            GEBuyMethods check2 = new GEBuy();
+            return check2.isOfferCompleted();
         }
+        
         /**Determines if there is an item by the name
          * 
          * @return <tt>true</tt> if an item was found; otherwise <tt>false</tt>
@@ -393,9 +454,7 @@ public class Test extends Script {
          */
         public static Interface getInterface() {
             return Interfaces.get(GE_INTERFACE);
-        }
-            
-            
+        }                        
 
         /**Gets the general interface for the slot
          * 
@@ -486,6 +545,10 @@ public class Test extends Script {
             return !isOpen();
         }
         
+        /**Opens the GrandExchange
+         * 
+         * @return <tt>true</tt> if open; otherwise <tt>false</tt>
+         */
         public static boolean open() {
             if (!isOpen()) {
                 Interactable i = new Npc("Exchange ", CLERKS);
@@ -921,7 +984,7 @@ public class Test extends Script {
             
             public int getSellClick();
             
-            public boolean isOfferCompleted(int slotNumber);
+            public boolean isOfferCompleted();
         }
         
         private static class GEBuy implements GEBuyMethods {
@@ -969,6 +1032,9 @@ public class Test extends Script {
                 }
             }
             
+            public GEBuy() {
+                
+            }            
             @Override
             public int getInterface() {
                 return this.Interface;
@@ -985,13 +1051,16 @@ public class Test extends Script {
             }
 
             @Override
-            public boolean isOfferCompleted(int slot) {
+            public boolean isOfferCompleted() {
                 if (Ge.isOpen()) {
-                    if (Interfaces.getComponent(GE_INTERFACE, getInterface()).getComponent(13) != null && Interfaces.getComponent(GE_INTERFACE, getInterface()).getComponent(13).getHeight() != 13 && Interfaces.getComponent(GE_INTERFACE, getInterface()).getComponent(13).getWidth() != 124) {
-                        return false;
-                    }
-                    if (Interfaces.getComponent(GE_INTERFACE, getInterface()).getComponent(13) != null && Interfaces.getComponent(GE_INTERFACE, getInterface()).getComponent(13).getHeight() == 13 && Interfaces.getComponent(GE_INTERFACE, getInterface()).getComponent(13).getWidth() == 124) {
-                        return true;
+                    int boxToCollect = Ge.getTotalSlots();
+                    for (int i = 1; i <= boxToCollect;) {
+                        GEBuyMethods k = new GEBuy(i);
+                        int inter = k.getInterface();                
+                        if (Interfaces.getComponent(GE_INTERFACE, inter).getComponent(13) != null && Interfaces.getComponent(GE_INTERFACE, inter).getComponent(13).getHeight() == 13 && Interfaces.getComponent(GE_INTERFACE, inter).getComponent(13).getWidth() == 124) {
+                            return true;
+                        }
+                        i++;
                     }                    
                 }
                 return false;                

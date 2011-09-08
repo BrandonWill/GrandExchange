@@ -45,8 +45,8 @@ public class Test extends Script {
     
     @Override
     public int loop() {
-        if (!Ge.collectIsOpen()) {
-            Ge.collectClose();
+        if (!Ge.bankCollectIsOpen()) {
+            Ge.bankCollectClose();
         }        
         if (!Ge.isOpen()) {
             Ge.open();
@@ -70,11 +70,11 @@ public class Test extends Script {
                             if (Ge.isOpen()) {
                                 Ge.close();
                             }
-                            if (!Ge.collectIsOpen()) {
-                                Ge.collectOpen();
+                            if (!Ge.bankCollectIsOpen()) {
+                                Ge.bankCollectOpen();
                             }
-                            if (Ge.collectIsOpen()) {
-                                Ge.collectAllCollection();
+                            if (Ge.bankCollectIsOpen()) {
+                                Ge.bankCollectAll();
                             }
                         }
                         i++;
@@ -88,11 +88,11 @@ public class Test extends Script {
                         if (Ge.isOpen()) {
                             Ge.close();
                         }
-                        if (!Ge.collectIsOpen()) {
-                            Ge.collectOpen();
+                        if (!Ge.bankCollectIsOpen()) {
+                            Ge.bankCollectOpen();
                         }
-                        if (Ge.collectIsOpen()) {
-                            Ge.collectAllCollection();
+                        if (Ge.bankCollectIsOpen()) {
+                            Ge.bankCollectAll();
                         }
                     }
                     i++;
@@ -474,9 +474,9 @@ public class Test extends Script {
          * @param slot determines which one to take from
          * @return interface for the slot
          */
-        public static int collectGetInterface(int slot) {
-            Ge.GECollectMethods collect = new Ge.GECollect(slot);
-            return collect.getInterface();
+        public static int bankGetInterface(int slot) {
+            Ge.BankCollectMethods collect = new Ge.BankCollect(slot);
+            return collect.getBankInterface();
         }
 
         /**Gets the left interface for the slot
@@ -484,9 +484,9 @@ public class Test extends Script {
          * @param slot determines which one to take from
          * @return left interface for the slot
          */
-        public static int collectGetLeftInterface(int slot) {
-            Ge.GECollectMethods collect = new Ge.GECollect(slot);
-            return collect.getLeftCollect();
+        public static int bankGetLeftInterface(int slot) {
+            Ge.BankCollectMethods collect = new Ge.BankCollect(slot);
+            return collect.getBankLeftCollect();
         }
 
         /**Gets the right interface for the slot
@@ -494,54 +494,54 @@ public class Test extends Script {
          * @param slot determines which one to take from
          * @return right interface for the slot
          */
-        public static int collectGetRightInterface(int slot) {
-            Ge.GECollectMethods collect = new Ge.GECollect(slot);
-            return collect.getRightCollect();
+        public static int bankGetRightInterface(int slot) {
+            Ge.BankCollectMethods collect = new Ge.BankCollect(slot);
+            return collect.getBankRightCollect();
         }            
         
         /**Collects from slot
          * 
          * @return <tt>true</tt> if collected successfully; otherwise <tt>false</tt>
          */
-        public static boolean collectBothCollection(int slot) {
-            Ge.GECollectMethods collect = new Ge.GECollect(slot);
-            return collect.collectBoth();
+        public static boolean bankCollectBoth(int slot) {
+            Ge.BankCollectMethods collect = new Ge.BankCollect(slot);
+            return collect.bankCollectBoth();
         }
             
         /**Collects everything from the interface
          * 
          * @return <tt>true</tt> if collected all successfully; otherwise <tt>false</tt>
          */
-        public static boolean collectAllCollection() {
-            Ge.GECollectMethods collect = new Ge.GECollect();
-            return collect.collectAll();
+        public static boolean bankCollectAll() {
+            Ge.BankCollectMethods collect = new Ge.BankCollect();
+            return collect.bankCollectAll();
         }
         
         /**Opens collection interface
          * 
          * @return <tt>true</tt> if opened successfully; otherwise <tt>false</tt>
          */
-        public static boolean collectOpen() {
-            Ge.GECollectMethods collect = new Ge.GECollect();
-            return collect.open();
+        public static boolean bankCollectOpen() {
+            Ge.BankCollectMethods collect = new Ge.BankCollect();
+            return collect.bankOpen();
         }
         
         /**Closes collection interface
          * 
          * @return <tt>true</tt> if closed successfully; otherwise <tt>false</tt>
          */
-        public static boolean collectClose() {
-            Ge.GECollectMethods collect = new Ge.GECollect();
-            return collect.close();
+        public static boolean bankCollectClose() {
+            Ge.BankCollectMethods collect = new Ge.BankCollect();
+            return collect.bankClose();
         }        
         
         /**Checks collection interface
          * 
          * @return <tt>true</tt> if opened; otherwise <tt>false</tt>
          */
-        public static boolean collectIsOpen() {
-            Ge.GECollectMethods collect = new Ge.GECollect();
-            return collect.isOpen();
+        public static boolean bankCollectIsOpen() {
+            Ge.BankCollectMethods collect = new Ge.BankCollect();
+            return collect.bankIsOpen();
         }        
         
 	/**
@@ -813,31 +813,31 @@ public class Test extends Script {
 		}
 	}
         
-        private static interface GECollectMethods {
-            public int getInterface();
+        private static interface BankCollectMethods {
+            public int getBankInterface();
             
-            public int getLeftCollect();
+            public int getBankLeftCollect();
             
-            public int getRightCollect();
+            public int getBankRightCollect();
             
-            public boolean collectBoth();
+            public boolean bankCollectBoth();
             
-            public boolean collectAll();
+            public boolean bankCollectAll();
             
-            public boolean isOpen();
+            public boolean bankIsOpen();
             
-            public boolean open();
+            public boolean bankOpen();
             
-            public boolean close();
+            public boolean bankClose();
         }
         
-        private static class GECollect implements GECollectMethods {
+        private static class BankCollect implements BankCollectMethods {
             private int Interface = 0;
             private int leftCollect = 0;
             private int rightCollect = 0;
             private final int COLLECT_CLOSE = 14;
             
-            public GECollect(int slot) {
+            public BankCollect(int slot) {
                 SLOT = slot;
                 switch (slot) {            
                     case 1:
@@ -878,27 +878,27 @@ public class Test extends Script {
                 }                
             }
 
-            public GECollect() {
+            public BankCollect() {
                 
             }
             @Override
-            public int getInterface() {
+            public int getBankInterface() {
                 return this.Interface;
             }
 
             @Override
-            public int getLeftCollect() {
+            public int getBankLeftCollect() {
                 return this.leftCollect;
             }
 
             @Override
-            public int getRightCollect() {
+            public int getBankRightCollect() {
                 return this.rightCollect;
             }
 
             @Override
-            public boolean collectBoth() {
-                if (isOpen()) {
+            public boolean bankCollectBoth() {
+                if (bankIsOpen()) {
                     if (Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(leftCollect).getActions() != null && Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(leftCollect).getActions().length >= 1) {
                         Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(leftCollect).click();
                         Task.sleep(Task.random(300, 500));
@@ -907,7 +907,7 @@ public class Test extends Script {
                         Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(rightCollect).click();
                         Task.sleep(Task.random(300, 500));
                     }
-                   close();
+                   bankClose();
                    return true;
                 }
                 return false;
@@ -915,13 +915,13 @@ public class Test extends Script {
 
 
             @Override
-            public boolean isOpen() {
+            public boolean bankIsOpen() {
                 return Interfaces.get(COLLECT_INTERFACE).isValid();
             }
 
             @Override
-            public boolean open() {
-                if (!isOpen()) {
+            public boolean bankOpen() {
+                if (!bankIsOpen()) {
                     Interactable i = new Npc("Collect ", BANKERS);
                     if (!i.isValid()) {
                         return false;
@@ -940,12 +940,12 @@ public class Test extends Script {
                                             Task.sleep(Task.random(5, 15));
                                     }
                             }
-                            for (int j = 0; j < 10 && !isOpen(); j++) {
+                            for (int j = 0; j < 10 && !bankIsOpen(); j++) {
                                     Task.sleep(Task.random(100, 200));
                             }
                             // Ensures that the widget becomes valid
                             Task.sleep(Task.random(700, 900));
-                            return isOpen();
+                            return bankIsOpen();
                     } else {
                             return false;
                     }
@@ -954,15 +954,15 @@ public class Test extends Script {
             }
 
             @Override
-            public boolean collectAll() {
-                if (isOpen()) {
+            public boolean bankCollectAll() {
+                if (bankIsOpen()) {
                     int boxToCollect;
                     boxToCollect = Ge.getTotalSlots();
                     for (int i = 1; i <= boxToCollect;) {
-                        GECollectMethods k = new GECollect(i);
-                        int inter = k.getInterface();
-                        int left = k.getLeftCollect();
-                        int right = k.getRightCollect();
+                        BankCollectMethods k = new BankCollect(i);
+                        int inter = k.getBankInterface();
+                        int left = k.getBankLeftCollect();
+                        int right = k.getBankRightCollect();
                         if (Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(left).getActions() != null && Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(left).getActions().length >= 1) {
                             Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(left).click();
                             Task.sleep(Task.random(300, 500));
@@ -973,15 +973,15 @@ public class Test extends Script {
                         }                       
                         i++;
                     }
-                    close();
+                    bankClose();
                     return true;
                 }
                 return false;
             }            
             
             @Override
-            public boolean close() {
-                if (isOpen()) {
+            public boolean bankClose() {
+                if (bankIsOpen()) {
                     Interfaces.getComponent(COLLECT_INTERFACE, COLLECT_CLOSE).click();
                     Task.sleep(Task.random(700, 900));
                 }

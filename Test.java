@@ -63,14 +63,17 @@ public class Test extends Script {
                 }
                 if (!canBuy() && Inventory.contains(item23)) {
                     Item Coins = Inventory.getItem(Ge.getItemID(item23));
-                    sellAmount = Coins.getStackSize()/Ge.getAllEmptySlots();                    
+                    if (Inventory.contains(item23) && Ge.isOpen()) {
+                        sellAmount = Coins.getStackSize()/Ge.getAllEmptySlots();
+                    }
                     Ge.sell(item23, t, sellAmount, 20); 
                 }
                 if (!canBuy() && !Inventory.contains(item23)) {
                     for(int i = 1; i <= Ge.getTotalSlots();) {
                         Mouse.moveSlightly();
+                        log("Ge.getApproximateBoughtAmount(i):" +Ge.getApproximateAmount(i));
                         Task.sleep(Task.random(700, 1000)); 
-                        if (Ge.isOfferCompleted()) {
+                        if (Ge.isAnOfferCompleted()) {
                             if (Ge.isOpen()) {
                                 Ge.close();
                             }
@@ -87,8 +90,9 @@ public class Test extends Script {
             } else {
                 for(int i = 1; i <= Ge.getTotalSlots();) {
                     Mouse.moveSlightly();
+                    log("Ge.getApproximateBoughtAmount(i):" +Ge.getApproximateAmount(i));
                     Task.sleep(Task.random(700, 1000));
-                    if (Ge.isOfferCompleted()) {
+                    if (Ge.isAnOfferCompleted()) {
                         if (Ge.isOpen()) {
                             Ge.close();
                         }
@@ -378,7 +382,7 @@ public class Test extends Script {
             return false;
         }        
                 
-        public static boolean isSelling() {
+        private static boolean isSelling() {
             return Interfaces.getComponent(GE_INTERFACE, 142).isValid() && !Interfaces.getComponent(GE_INTERFACE, 142).getText().equals("Choose an item to exchange");
         }
                 
@@ -386,7 +390,7 @@ public class Test extends Script {
          * 
          * @return number to match GrandExchange's
          */
-        public static String formatNumb(long money) {
+        private static String formatNumb(long money) {
             return new DecimalFormat("###,###,###,###,###,###").format(money);
 	}
         
@@ -475,15 +479,30 @@ public class Test extends Script {
          * 
          * @return <tt>true</tt> if an offer is completed; otherwise <tt>false</tt>
          */
-        public static boolean isOfferCompleted() {
+        public static boolean isAnOfferCompleted() {
             GEBuyMethods check2 = new GEBuy();
             return check2.isAnOfferCompleted();
         }
         
+        /**Gets the completion percent for a slot
+         * 
+         * @param slot gets slot Number
+         * @return slot's completion percentage
+         */
         public static double getCompletionPercent(int slot) {
             GEBuyMethods check2 = new GEBuy(slot);
             return check2.getCompletionPercent();
-        }        
+        }
+        
+        /**Gets the approximate bought amount for a slot
+         * 
+         * @param slot gets slot Number
+         * @return slot's approximate bought amount
+         */
+        public static int getApproximateAmount(int slot) {
+            GEBuyMethods check2 = new GEBuy(slot);
+            return check2.getApproximateAmount();
+        }         
         
         /**Determines if there is an item by the name
          * 
@@ -1062,6 +1081,8 @@ public class Test extends Script {
             public boolean isAnOfferCompleted();
             
             public double getCompletionPercent();
+            
+            public int getApproximateAmount();
         }
         
         private static class GEBuy implements GEBuyMethods {
@@ -1070,6 +1091,9 @@ public class Test extends Script {
             private int sellClick = 0;
             private int completeWidth = 124;
             private int height = 13;
+            private int COMPLETION_BAR_INTERFACE = 13;
+            private int STACKSIZE_INTERFACE = 17;
+            
             
             public GEBuy(int slot) {
                 switch (slot) {            
@@ -1137,7 +1161,7 @@ public class Test extends Script {
                     for (int i = 1; i <= boxToCollect;) {
                         GEBuyMethods k = new GEBuy(i);
                         int inter = k.getInterface();                
-                        if (Interfaces.getComponent(GE_INTERFACE, inter).getComponent(13) != null && Interfaces.getComponent(GE_INTERFACE, inter).getComponent(13).getHeight() == height && Interfaces.getComponent(GE_INTERFACE, inter).getComponent(13).getWidth() == completeWidth) {
+                        if (Interfaces.getComponent(GE_INTERFACE, inter).getComponent(COMPLETION_BAR_INTERFACE) != null && Interfaces.getComponent(GE_INTERFACE, inter).getComponent(COMPLETION_BAR_INTERFACE).getHeight() == height && Interfaces.getComponent(GE_INTERFACE, inter).getComponent(COMPLETION_BAR_INTERFACE).getWidth() == completeWidth) {
                             return true;
                         }
                         i++;
@@ -1148,14 +1172,22 @@ public class Test extends Script {
 
             @Override
             public double getCompletionPercent() {
-                if (Interfaces.getComponent(GE_INTERFACE, Interface).getComponent(13) != null) {
-                    double numb = Interfaces.getComponent(GE_INTERFACE, Interface).getComponent(13).getWidth();
-                    log.severe("numb: " +numb/completeWidth*100);
-                    return numb/completeWidth*100;
+                if (Interfaces.getComponent(GE_INTERFACE, Interface).getComponent(COMPLETION_BAR_INTERFACE) != null) {
+                    double numb = Interfaces.getComponent(GE_INTERFACE, Interface).getComponent(COMPLETION_BAR_INTERFACE).getWidth();
+                    double percent = numb/completeWidth;
+                    return percent;
                 }
-                log.severe("Not there!");
                 return 0;
-            }            
+            }
+
+            @Override
+            public int getApproximateAmount() {
+                if (Interfaces.getComponent(GE_INTERFACE, Interface).getComponent(STACKSIZE_INTERFACE) != null) {
+                    int numb = Interfaces.getComponent(GE_INTERFACE, Interface).getComponent(STACKSIZE_INTERFACE).getComponentStackSize();
+                    return (int) (numb*getCompletionPercent());
+                }
+                return 0;
+            }
         }
         
 	private static interface Interactable {

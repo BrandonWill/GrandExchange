@@ -27,7 +27,7 @@ import org.rsbot.script.wrappers.NPC;
 public class Test extends Script {
     boolean done = false;
     int buyPrice = 19;
-    int buyAmount = 500;
+    int buyAmount = 1;
     String item23 = "Steel arrow";
     
     public boolean canBuy() {
@@ -45,18 +45,6 @@ public class Test extends Script {
     
     @Override
     public int loop() {
-//        if (!done) {
-//        for(int i = 0; Interfaces.getComponent(389, 4).getComponent(i) != null;) {
-//            log("HOW BIG" +i +":" +Interfaces.getComponent(389, 4).getComponent(i).getText() +" IS NOT NULL");
-//            i++;
-//            if (Interfaces.getComponent(389, 4).getComponent(i +1) == null) {
-//                done = true;
-//            }
-//        }        
-//        }
-//        if (done) {
-//          sleep(100);
-//        }
         if (!Ge.collectIsOpen()) {
             Ge.collectClose();
         }        
@@ -138,12 +126,12 @@ public class Test extends Script {
                 int buyClick = t.getBuyClick();
                 if (!isSearching()) {
                     Interfaces.getComponent(GE_INTERFACE, buyClick).click();
-                    log.severe("Not searching, clicking!");
+                    log.severe("BUY: Not searching, clicking!");
                     Task.sleep(Task.random(700, 900));
                 }
                 if (isSearching() && !hasSearched(itemName)) {
                     Keyboard.sendTextInstant(itemName, true);
-                    log.severe("searching, has not searched!");
+                    log.severe("BUY: searching, has not searched!");
                     Task.sleep(Task.random(1000, 1500));
                 }
                 if (isSearching() && hasSearched(itemName)) {
@@ -203,7 +191,7 @@ public class Test extends Script {
                                 Task.sleep(Task.random(700, 900));
                             }
                         }
-                        log.severe("Quan: " +changeQuantity +" Price: " +changePrice);
+                        log.severe("BUY: Quan: " +changeQuantity +" Price: " +changePrice);
                         while (!changeQuantity && changePrice) {
                             Task.sleep(Task.random(700, 900));
                             if (Interfaces.getComponent(GE_INTERFACE).getComponent(177) != null) {
@@ -255,15 +243,21 @@ public class Test extends Script {
                 boolean offeredItem = false;
                 if (!isSelling()) {
                     Interfaces.getComponent(GE_INTERFACE, sellClick).click();
-                    log.severe("Not searching, clicking!");
+                    log.severe("SELL: Not searching, clicking!");
                     Task.sleep(Task.random(700, 900));
                     offerItem = true;                    
                 }
                 if (!isSelling() && offerItem) {
+                    log.severe("SELL: searching, has not searched!");
                     Inventory.getItem(itemName).click(true);
                     Task.sleep(Task.random(300, 500));
                     offeredItem = true;
                 }
+                if (isSelling()) {
+                    Ge.close();
+                    return false;
+                }
+                log.severe("isSellin :" +isSelling());
                 if (!isSelling() && offeredItem) {                        
                     boolean changeQuantity;
                     if (quantity > 1) {
@@ -294,6 +288,7 @@ public class Test extends Script {
                             changeQuantity = false;
                         } 
                     }
+                    log.severe("SELL: Quan: " +changeQuantity +" Price: " +changePrice);
                     while (!changeQuantity && changePrice) {
                         Task.sleep(Task.random(700, 900));
                         if (Interfaces.getComponent(GE_INTERFACE).getComponent(177) != null) {
@@ -320,10 +315,10 @@ public class Test extends Script {
                         } else {
                             Mouse.move(262, 297);
                             Mouse.click(true);
-                        }
-                        Ge.close();
-                        return true;        
-                    }                  
+                        }        
+                    }
+                    Ge.close();
+                    return true;                    
                 }
             }
             return false;

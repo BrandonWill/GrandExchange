@@ -26,9 +26,9 @@ import org.rsbot.script.wrappers.NPC;
 @ScriptManifest(authors = { "Dwarfeh" }, keywords = { "test" }, name = "aaaa IM FIRST", description = "Trololol", version = 1.0)
 public class Test extends Script {
     boolean done = false;
-    int buyPrice = 19;
+    int buyPrice = 842;
     int buyAmount = 1;
-    String item23 = "Steel arrow";
+    String item23 = "Strength potion (4)"; //"Strength potion (4)"
     
     public boolean canBuy() {
       Item Coins = Inventory.getItem(995);
@@ -56,7 +56,7 @@ public class Test extends Script {
             if (t >0) {
                 if (canBuy()) {
                     Item Coins = Inventory.getItem(995);
-                    buyAmount = Coins.getStackSize()/buyPrice;
+//                    buyAmount = Coins.getStackSize()/buyPrice;
                     Ge.buy(item23, t, buyAmount, buyPrice);
                 }
                 if (!canBuy() && Inventory.contains(item23)) {
@@ -118,6 +118,18 @@ public class Test extends Script {
         
         public static boolean buy(String itemName, int slotNumber, int quantity, int price) {
             SLOT = slotNumber;
+            String Sep[] = itemName.split(" ");
+            String searchName = null;
+            for (int i = 0; i < Sep.length;) {
+                if (!Sep[i].contains("(")) {
+                    if (searchName == null) {
+                        searchName = Sep[i];
+                    } else {
+                        searchName += " "+Sep[i];
+                    }
+                }
+                i++;
+            }
             if (slotNumber == 0 || slotNumber > 5) {
                 return false;
             }
@@ -129,12 +141,13 @@ public class Test extends Script {
                     log.severe("BUY: Not searching, clicking!");
                     Task.sleep(Task.random(700, 900));
                 }
-                if (isSearching() && !hasSearched(itemName)) {
-                    Keyboard.sendTextInstant(itemName, true);
+                if (isSearching() && !hasSearched(searchName)) {
+                    Keyboard.sendTextInstant(searchName, true);
                     log.severe("BUY: searching, has not searched!");
                     Task.sleep(Task.random(1000, 1500));
                 }
-                if (isSearching() && hasSearched(itemName)) {
+                if (isSearching() && hasSearched(searchName)) {
+                    log.severe("Inside HERE!");
                     boolean foundItem = false;
                     if (findItem() && !foundItem) {
                         boolean done = false;
@@ -224,6 +237,8 @@ public class Test extends Script {
                         }
                     }                    
                 }
+                Ge.close();
+                return false;
             }
             return false;
         }
@@ -320,6 +335,8 @@ public class Test extends Script {
                     Ge.close();
                     return true;                    
                 }
+                Ge.close();
+                return false;
             }
             return false;
         }        
@@ -1141,6 +1158,5 @@ public class Test extends Script {
             }
             return null;
         }
-
     }    
 }

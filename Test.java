@@ -26,9 +26,9 @@ import org.rsbot.script.wrappers.NPC;
 @ScriptManifest(authors = { "Dwarfeh" }, keywords = { "test" }, name = "aaaa IM FIRST", description = "Trololol", version = 1.0)
 public class Test extends Script {
     boolean done = false;
-    int buyPrice = 842;
+    int buyPrice = 19;
     int buyAmount = 1;
-    String item23 = "Strength potion (4)"; //"Strength potion (4)"
+    String item23 = "steel arrow"; //"Strength potion (4)"
     
     public boolean canBuy() {
       Item Coins = Inventory.getItem(995);
@@ -56,7 +56,7 @@ public class Test extends Script {
             if (t >0) {
                 if (canBuy()) {
                     Item Coins = Inventory.getItem(995);
-//                    buyAmount = Coins.getStackSize()/buyPrice;
+                    buyAmount = Coins.getStackSize()/buyPrice;
                     Ge.buy(item23, t, buyAmount, buyPrice);
                 }
                 if (!canBuy() && Inventory.contains(item23)) {
@@ -118,6 +118,7 @@ public class Test extends Script {
         
         public static boolean buy(String itemName, int slotNumber, int quantity, int price) {
             SLOT = slotNumber;
+            itemName = itemName.substring(0,1).toUpperCase() + itemName.substring(1);            
             String Sep[] = itemName.split(" ");
             String searchName = null;
             for (int i = 0; i < Sep.length;) {
@@ -1079,6 +1080,7 @@ public class Test extends Script {
             }
             
         }
+        
 	private static interface Interactable {
 		public int getDistance();
 

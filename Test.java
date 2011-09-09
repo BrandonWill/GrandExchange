@@ -71,7 +71,6 @@ public class Test extends Script {
                 if (!canBuy() && !Inventory.contains(item23)) {
                     for(int i = 1; i <= Ge.getTotalSlots();) {
                         Mouse.moveSlightly();
-                        log("Ge.getApproximateBoughtAmount(i):" +Ge.getApproximateAmount(i));
                         Task.sleep(Task.random(700, 1000)); 
                         if (Ge.isAnOfferCompleted()) {
                             if (Ge.isOpen()) {
@@ -90,7 +89,6 @@ public class Test extends Script {
             } else {
                 for(int i = 1; i <= Ge.getTotalSlots();) {
                     Mouse.moveSlightly();
-                    log("Ge.getApproximateBoughtAmount(i):" +Ge.getApproximateAmount(i));
                     Task.sleep(Task.random(700, 1000));
                     if (Ge.isAnOfferCompleted()) {
                         if (Ge.isOpen()) {

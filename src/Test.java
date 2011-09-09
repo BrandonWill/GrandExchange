@@ -1,3 +1,12 @@
+import org.rsbot.gui.AccountManager;
+import org.rsbot.script.Script;
+import org.rsbot.script.ScriptManifest;
+import org.rsbot.script.concurrent.Task;
+import org.rsbot.script.methods.*;
+import org.rsbot.script.methods.ui.Interfaces;
+import org.rsbot.script.wrappers.Interface;
+import org.rsbot.script.wrappers.Item;
+import org.rsbot.script.wrappers.NPC;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,21 +15,6 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.rsbot.gui.AccountManager;
-import org.rsbot.script.Script;
-import org.rsbot.script.ScriptManifest;
-import org.rsbot.script.concurrent.Task;
-import org.rsbot.script.methods.Account;
-import org.rsbot.script.methods.Calculations;
-import org.rsbot.script.methods.Keyboard;
-import org.rsbot.script.methods.Menu;
-import org.rsbot.script.methods.Mouse;
-import org.rsbot.script.methods.NPCs;
-import org.rsbot.script.methods.Players;
-import org.rsbot.script.methods.ui.Interfaces;
-import org.rsbot.script.wrappers.Interface;
-import org.rsbot.script.wrappers.Item;
-import org.rsbot.script.wrappers.NPC;
 
 
 @ScriptManifest(authors = { "Dwarfeh" }, keywords = { "test" }, name = "aaaa IM FIRST", description = "Trololol", version = 1.0)
@@ -159,7 +153,7 @@ public class Test extends Script {
                     if (findItem() && !foundItem) {
                         boolean done = false;
                         int index = 0;
-                        if (!done) {                            
+                        if (!done) {
                             for(int i = 0; Interfaces.getComponent(389, 4).getComponent(i) != null;) {
                                 if (Interfaces.getComponent(389, 4).getComponent(i).getText().equals(itemName)) {
                                     index = i;
@@ -168,7 +162,7 @@ public class Test extends Script {
                                 if (Interfaces.getComponent(389, 4).getComponent(i +1) == null) {
                                     done = true;
                                 }
-                            }        
+                            }
                         }
                         if (done && index == 0) {
                             return false;
@@ -188,11 +182,7 @@ public class Test extends Script {
                     if (foundItem) {                        
                         boolean changeQuantity = true;
                         boolean changePrice;
-                        if (price > 1) {
-                            changePrice = true;
-                        } else {
-                            changePrice = false;
-                        }
+                        changePrice = price > 1;
                         int times = 0;
                         while (changeQuantity) {
                             if (times >= 3) {
@@ -219,7 +209,7 @@ public class Test extends Script {
                         }
                         times = 0;
                         log.severe("BUY: Quan: " +changeQuantity +" Price: " +changePrice);
-                        while (!changeQuantity && changePrice) {
+                        while (changePrice && !changeQuantity) {
                             if (times >= 3) {
                                 Ge.close();
                                 return false;
@@ -247,7 +237,7 @@ public class Test extends Script {
                             }
                             times++;
                         }
-                        if (!changeQuantity && !changePrice) {
+                        if (!changePrice && !changeQuantity) {
                             Task.sleep(Task.random(700, 900));
                             if (Interfaces.getComponent(GE_INTERFACE).getComponent(185) != null) {
                                 Interfaces.getComponent(GE_INTERFACE).getComponent(186).click();
@@ -298,17 +288,9 @@ public class Test extends Script {
                 log.severe("isSellin :" +isSelling());
                 if (!isSelling() && offeredItem) {                        
                     boolean changeQuantity;
-                    if (quantity > 1) {
-                        changeQuantity = true;
-                    } else {
-                        changeQuantity = false;
-                    }
+                    changeQuantity = quantity > 1;
                     boolean changePrice;
-                    if (price > 1) {
-                        changePrice = true;
-                    } else {
-                        changePrice = false;
-                    }
+                    changePrice = price > 1;
                     int times = 0;
                     while (changeQuantity) {
                         if (times == 3) {
@@ -334,7 +316,7 @@ public class Test extends Script {
                     }
                     times = 0;
                     log.severe("SELL: Quan: " +changeQuantity +" Price: " +changePrice);
-                    while (!changeQuantity && changePrice) {
+                    while (changePrice && !changeQuantity) {
                         if (times == 3) {
                             Ge.close();
                             return false;
@@ -386,6 +368,7 @@ public class Test extends Script {
                 
         /**Sets the number format as the same as GrandExchange's
          * 
+         * @param money GrandExchange's money
          * @return number to match GrandExchange's
          */
         private static String formatNumb(long money) {
@@ -397,10 +380,7 @@ public class Test extends Script {
          * @return <tt>true</tt> if members is selected for the account; otherwise <tt>false</tt>
          */
         public static boolean isMember() {
-            if (AccountManager.isMember(Account.getName())) {
-                return true;
-            }
-            return false;
+            return AccountManager.isMember(Account.getName());
         }
         
         /**Gets the total slots there are for the person
@@ -512,16 +492,14 @@ public class Test extends Script {
         
         /**Determines if the person has searched or not
          * 
+         * @param itemName is defined by buy/sell item
          * @return <tt>true</tt> if they have searched; otherwise <tt>false</tt>
          */
         public static boolean hasSearched(String itemName) {
             if (!Character.isUpperCase(itemName.charAt(0))) {
                 Character.toUpperCase(itemName.charAt(0));
             }
-            if (Interfaces.getComponent(GE_INTERFACE, 142).getText().contains(itemName)) {
-                return true;
-            }            
-            return Interfaces.getComponent(SEARCH, 4).getComponent(1) != null && Interfaces.getComponent(SEARCH, 9).getText().contains(itemName);
+            return Interfaces.getComponent(GE_INTERFACE, 142).getText().contains(itemName) || Interfaces.getComponent(SEARCH, 4).getComponent(1) != null && Interfaces.getComponent(SEARCH, 9).getText().contains(itemName);
         }
         
         /**Determines if the player is searching
@@ -580,6 +558,7 @@ public class Test extends Script {
         
         /**Collects from slot
          * 
+         * @param slot to choose from
          * @return <tt>true</tt> if collected successfully; otherwise <tt>false</tt>
          */
         public static boolean bankCollectBoth(int slot) {
@@ -679,7 +658,7 @@ public class Test extends Script {
 	 *
 	 * @param itemID The item ID to look for.
 	 * @return The name of the given item ID or an empty String if unavailable.
-	 * @see GrandExchange#lookup(int)
+	 * @see Ge#lookup(int)
 	 */
 	public static String getItemName(final int itemID) {
 		final GEItem geItem = lookup(itemID);
@@ -694,7 +673,7 @@ public class Test extends Script {
 	 *
 	 * @param itemName The name of the item to look for.
 	 * @return The ID of the given item name or -1 if unavailable.
-	 * @see GrandExchange#lookup(java.lang.String)
+	 * @see Ge#lookup(java.lang.String)
 	 */
 	public static int getItemID(final String itemName) {
 		final GEItem geItem = lookup(itemName);
@@ -960,22 +939,19 @@ public class Test extends Script {
             public BankCollect() {
                 
             }
-            @Override
+
             public int getBankInterface() {
                 return this.Interface;
             }
 
-            @Override
             public int getBankLeftCollect() {
                 return this.leftCollect;
             }
 
-            @Override
             public int getBankRightCollect() {
                 return this.rightCollect;
             }
 
-            @Override
             public boolean bankCollectBoth() {
                 if (bankIsOpen()) {
                     if (Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(leftCollect).getActions() != null && Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(leftCollect).getActions().length >= 1) {
@@ -992,13 +968,10 @@ public class Test extends Script {
                 return false;
             }
 
-
-            @Override
             public boolean bankIsOpen() {
                 return Interfaces.get(COLLECT_INTERFACE).isValid();
             }
 
-            @Override
             public boolean bankOpen() {
                 if (!bankIsOpen()) {
                     Interactable i = new Npc("Collect ", BANKERS);
@@ -1032,7 +1005,6 @@ public class Test extends Script {
                 return true;
             }
 
-            @Override
             public boolean bankCollectAll() {
                 if (bankIsOpen()) {
                     int boxToCollect;
@@ -1057,8 +1029,7 @@ public class Test extends Script {
                 }
                 return false;
             }            
-            
-            @Override
+
             public boolean bankClose() {
                 if (bankIsOpen()) {
                     Interfaces.getComponent(COLLECT_INTERFACE, COLLECT_CLOSE).click();
@@ -1136,23 +1107,19 @@ public class Test extends Script {
             public GEBuy() {
                 
             }
-            
-            @Override
+
             public int getInterface() {
                 return this.Interface;
             }
 
-            @Override
             public int getBuyClick() {
                 return this.buyClick;
             }
 
-            @Override
             public int getSellClick() {
                 return this.sellClick;
             }
 
-            @Override
             public boolean isAnOfferCompleted() {
                 if (Ge.isOpen()) {
                     int boxToCollect = Ge.getTotalSlots();
@@ -1168,17 +1135,14 @@ public class Test extends Script {
                 return false;                
             }
 
-            @Override
             public double getCompletionPercent() {
                 if (Interfaces.getComponent(GE_INTERFACE, Interface).getComponent(COMPLETION_BAR_INTERFACE) != null) {
                     double numb = Interfaces.getComponent(GE_INTERFACE, Interface).getComponent(COMPLETION_BAR_INTERFACE).getWidth();
-                    double percent = numb/completeWidth;
-                    return percent;
+                    return numb/completeWidth;
                 }
                 return 0;
             }
 
-            @Override
             public int getApproximateAmount() {
                 if (Interfaces.getComponent(GE_INTERFACE, Interface).getComponent(STACKSIZE_INTERFACE) != null) {
                     int numb = Interfaces.getComponent(GE_INTERFACE, Interface).getComponent(STACKSIZE_INTERFACE).getComponentStackSize();
@@ -1208,31 +1172,27 @@ public class Test extends Script {
                     npc = NPCs.getNearest(ids);
 		}
 
-            @Override
 		public int getDistance() {
                     return Calculations.distanceTo(npc);
 		}
 
-            @Override
 		public boolean interact() {
                     Mouse.click(npc.getPoint(), false);
                     if (npc.getName().equals("Banker")) {
-                        return Menu.isOpen() && Menu.clickIndex(Menu.getIndex(action));  
+                        return Menu.isOpen() && Menu.clickIndex(Menu.getIndex(action));
                     }
                     return Menu.isOpen() && Menu.clickIndex(Menu.getIndex(action) + 1);
                     //return npc.interact(action);
 		}
 
-            @Override
 		public boolean isOnScreen() {
 			return npc.isOnScreen();
 		}
 
-            @Override
 		public boolean isValid() {
 			return npc != null;
 		}
-	}         
+	}
     }
     public static class Inventory extends org.rsbot.script.methods.tabs.Inventory {
 
@@ -1267,5 +1227,5 @@ public class Test extends Script {
             }
             return null;
         }
-    }    
+    }
 }

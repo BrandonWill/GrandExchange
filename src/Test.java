@@ -135,13 +135,15 @@ public class Test extends Script {
                 int buyClick = t.getBuyClick();
                 if (!isSearching()) {
                     Interfaces.getComponent(GE_INTERFACE, buyClick).click();
+                    //has to wait for search bar to come up
+                    Task.sleep(Task.random(900, 1000));
                     log.severe("BUY: Not searching, clicking!");
-                    Task.sleep(Task.random(700, 900));
                 }
                 if (isSearching() && !hasSearched(searchName)) {
                     Keyboard.sendTextInstant(searchName, true);
-                    log.severe("BUY: searching, has not searched!");
+                    //has to wait for list before it closes
                     Task.sleep(Task.random(1000, 1500));
+                    log.severe("BUY: searching, has not searched!");
                 }
                 if (isSearching() && hasSearched(searchName)) {
                     log.severe("Inside HERE!");
@@ -166,11 +168,9 @@ public class Test extends Script {
                         if (done && index > 0) {
                             if (!Interfaces.getComponent(389, 4).getComponent(index).isVisible() && Interfaces.getComponent(389, 8).getComponent(5).isVisible()) {
                                 Interfaces.getComponent(389, 8).getComponent(5).click();
-                                Task.sleep(Task.random(200, 500));
                             }
                             if (Interfaces.getComponent(389, 4).getComponent(index).isVisible()) {
                                 Interfaces.getComponent(389, 4).getComponent(index).click();
-                                Task.sleep(Task.random(700, 900));
                                 foundItem = true;
                             }
                         }
@@ -186,21 +186,22 @@ public class Test extends Script {
                                 return false;
                             }
                             if (isOpen()) {
-                                if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains("" + formatNumb(quantity))) {
+                                if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains(formatNumb(quantity))) {
                                     changeQuantity = false;
                                     break;
                                 }
                                 if (Interfaces.getComponent(GE_INTERFACE, 168).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
                                     Interfaces.getComponent(GE_INTERFACE, 168).click();
-                                    Task.sleep(Task.random(700, 900));
+                                    //has to wait for interface to show up
+                                    Task.sleep(Task.random(900, 1000));
                                 }
                                 if (Interfaces.getComponent(752, 4).getText().contains("you wish to purchase")) {
-                                    Keyboard.sendTextInstant("" + quantity, true);
+                                    Keyboard.sendTextInstant(Integer.toString(quantity), true);
                                 }
-                                Task.sleep(Task.random(1000, 2000));
-                                if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains("" + formatNumb(quantity))) {
+                                //prevents spam clicking
+                                Task.sleep(Task.random(1000, 1500));
+                                if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains(formatNumb(quantity))) {
                                     changeQuantity = false;
-                                    Task.sleep(Task.random(700, 900));
                                 }
                             } else {
                                 return false;
@@ -215,21 +216,22 @@ public class Test extends Script {
                                 return false;
                             }
                             if (isOpen()) {
-                                if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains("" + formatNumb(price))) {
+                                if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains(formatNumb(price))) {
                                     changePrice = false;
                                     break;
                                 }
                                 if (Interfaces.getComponent(GE_INTERFACE, 168).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
                                     Interfaces.getComponent(GE_INTERFACE, 168).click();
+                                     //has to wait for interface to show up
                                     Task.sleep(Task.random(700, 900));
                                 }
                                 if (Interfaces.getComponent(752, 4).getText().contains("you wish to buy")) {
-                                    Keyboard.sendTextInstant("" + price, true);
+                                    Keyboard.sendTextInstant(Integer.toString(price), true);
                                 }
-                                Task.sleep(Task.random(1000, 2000));
-                                if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains("" + formatNumb(price))) {
+                                //prevents spam clicking
+                                Task.sleep(Task.random(1000, 1500));
+                                if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains(formatNumb(price))) {
                                     changePrice = false;
-                                    Task.sleep(Task.random(700, 900));
                                 }
                             } else {
                                 return false;
@@ -276,12 +278,14 @@ public class Test extends Script {
                 if (!isSelling()) {
                     Interfaces.getComponent(GE_INTERFACE, sellClick).click();
                     log.severe("SELL: Not searching, clicking!");
-                    Task.sleep(Task.random(700, 900));
+                    //waits for interface to be valid
+                    Task.sleep(Task.random(900, 1000));
                     offerItem = true;
                 }
                 if (!isSelling() && offerItem) {
                     log.severe("SELL: searching, has not searched!");
                     Inventory.getItem(itemName).click(true);
+                    //waits for interface to be valid
                     Task.sleep(Task.random(500, 700));
                     offeredItem = true;
                 }
@@ -302,19 +306,21 @@ public class Test extends Script {
                             return false;
                         }
                         if (isOpen()) {
-                            if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains("" + formatNumb(quantity))) {
+                            if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains(formatNumb(quantity))) {
                                 changeQuantity = false;
                                 break;
                             }
                             if (Interfaces.getComponent(GE_INTERFACE, 168).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
                                 Interfaces.getComponent(GE_INTERFACE, 168).click();
+                                //has to wait for interface to show up
                                 Task.sleep(Task.random(700, 900));
                             }
                             if (Interfaces.getComponent(752, 4).getText().contains("amount you wish to")) {
-                                Keyboard.sendTextInstant("" + quantity, true);
+                                Keyboard.sendTextInstant(Integer.toString(quantity), true);
                             }
-                            Task.sleep(Task.random(1000, 2000));
-                            if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains("" + formatNumb(quantity))) {
+                            //prevents spam clicking
+                            Task.sleep(Task.random(1000, 1500));
+                            if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains(formatNumb(quantity))) {
                                 changeQuantity = false;
                             }
                         } else {
@@ -332,13 +338,15 @@ public class Test extends Script {
                         if (isOpen()) {
                             if (Interfaces.getComponent(GE_INTERFACE, 177).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
                                 Interfaces.getComponent(GE_INTERFACE, 177).click();
+                                //has to wait for interface to show up
                                 Task.sleep(Task.random(700, 900));
                             }
                             if (Interfaces.getComponent(752, 4).getText().contains("you wish to sell")) {
-                                Keyboard.sendTextInstant("" + price, true);
+                                Keyboard.sendTextInstant(Integer.toString(price), true);
                             }
-                            Task.sleep(Task.random(1000, 2000));
-                            if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains("" + formatNumb(price))) {
+                            //prevents spam clicking
+                            Task.sleep(Task.random(1000, 1500));
+                            if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains(formatNumb(price))) {
                                 changePrice = false;
                             }
                         } else {

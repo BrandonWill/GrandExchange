@@ -182,7 +182,7 @@ public class Test extends Script {
                         int times = 0;
                         while (changeQuantity) {
                             if (times >= 3) {
-                                Ge.close();
+                                close();
                                 return false;
                             }
                             if (isOpen()) {
@@ -211,7 +211,7 @@ public class Test extends Script {
                         log.severe("BUY: Quan: " + changeQuantity + " Price: " + changePrice);
                         while (changePrice && !changeQuantity) {
                             if (times >= 3) {
-                                Ge.close();
+                                close();
                                 return false;
                             }
                             if (isOpen()) {
@@ -240,12 +240,12 @@ public class Test extends Script {
                             if (Interfaces.getComponent(GE_INTERFACE, 187).getText() != null) {
                                 Interfaces.getComponent(GE_INTERFACE, 187).click();
                             }
-                            Ge.close();
+                            close();
                             return true;
                         }
                     }
                 }
-                Ge.close();
+                close();
                 return false;
             }
             return false;
@@ -286,7 +286,7 @@ public class Test extends Script {
                     offeredItem = true;
                 }
                 if (isSelling()) {
-                    Ge.close();
+                    close();
                     return false;
                 }
                 log.severe("isSellin :" + isSelling());
@@ -298,7 +298,7 @@ public class Test extends Script {
                     int times = 0;
                     while (changeQuantity) {
                         if (times == 3) {
-                            Ge.close();
+                            close();
                             return false;
                         }
                         if (isOpen()) {
@@ -326,7 +326,7 @@ public class Test extends Script {
                     log.severe("SELL: Quan: " + changeQuantity + " Price: " + changePrice);
                     while (changePrice && !changeQuantity) {
                         if (times == 3) {
-                            Ge.close();
+                            close();
                             return false;
                         }
                         if (isOpen()) {
@@ -351,10 +351,10 @@ public class Test extends Script {
                             Interfaces.getComponent(GE_INTERFACE, 187).click();
                         }
                     }
-                    Ge.close();
+                    close();
                     return true;
                 }
-                Ge.close();
+                close();
                 return false;
             }
             return false;
@@ -392,7 +392,7 @@ public class Test extends Script {
          * @return number of slots if account is member
          */
         public static int getTotalSlots() {
-            return isMember() ? 6: 2;
+            return isMember() ? 6 : 2;
         }
 
         /**
@@ -545,7 +545,7 @@ public class Test extends Script {
          * @return interface for the slot
          */
         public static int bankGetInterface(int slot) {
-            Ge.BankCollectMethods collect = new Ge.BankCollect(slot);
+            BankCollectMethods collect = new BankCollect(slot);
             return collect.getBankInterface();
         }
 
@@ -556,7 +556,7 @@ public class Test extends Script {
          * @return left interface for the slot
          */
         public static int bankGetLeftInterface(int slot) {
-            Ge.BankCollectMethods collect = new Ge.BankCollect(slot);
+            BankCollectMethods collect = new BankCollect(slot);
             return collect.getBankLeftCollect();
         }
 
@@ -567,7 +567,7 @@ public class Test extends Script {
          * @return right interface for the slot
          */
         public static int bankGetRightInterface(int slot) {
-            Ge.BankCollectMethods collect = new Ge.BankCollect(slot);
+            BankCollectMethods collect = new BankCollect(slot);
             return collect.getBankRightCollect();
         }
 
@@ -578,7 +578,7 @@ public class Test extends Script {
          * @return <tt>true</tt> if collected successfully; otherwise <tt>false</tt>
          */
         public static boolean bankCollectBoth(int slot) {
-            Ge.BankCollectMethods collect = new Ge.BankCollect(slot);
+            BankCollectMethods collect = new BankCollect(slot);
             return collect.bankCollectBoth();
         }
 
@@ -588,7 +588,7 @@ public class Test extends Script {
          * @return <tt>true</tt> if collected all successfully; otherwise <tt>false</tt>
          */
         public static boolean bankCollectAll() {
-            Ge.BankCollectMethods collect = new Ge.BankCollect();
+            BankCollectMethods collect = new BankCollect();
             return collect.bankCollectAll();
         }
 
@@ -598,7 +598,7 @@ public class Test extends Script {
          * @return <tt>true</tt> if opened successfully; otherwise <tt>false</tt>
          */
         public static boolean bankCollectOpen() {
-            Ge.BankCollectMethods collect = new Ge.BankCollect();
+            BankCollectMethods collect = new BankCollect();
             return collect.bankOpen();
         }
 
@@ -608,7 +608,7 @@ public class Test extends Script {
          * @return <tt>true</tt> if closed successfully; otherwise <tt>false</tt>
          */
         public static boolean bankCollectClose() {
-            Ge.BankCollectMethods collect = new Ge.BankCollect();
+            BankCollectMethods collect = new BankCollect();
             return collect.bankClose();
         }
 
@@ -618,12 +618,12 @@ public class Test extends Script {
          * @return <tt>true</tt> if opened; otherwise <tt>false</tt>
          */
         public static boolean bankCollectIsOpen() {
-            Ge.BankCollectMethods collect = new Ge.BankCollect();
+            BankCollectMethods collect = new BankCollect();
             return collect.bankIsOpen();
         }
 
         /**
-         * Closes the GE.
+         * Closes the GE
          *
          * @return <tt>true</tt> if the GE is no longer open; otherwise <tt>false</tt>
          */

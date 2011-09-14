@@ -181,60 +181,52 @@ public class Test extends Script {
                         changePrice = price > 1;
                         int times = 0;
                         while (changeQuantity) {
-                            if (times >= 3) {
+                            if (times >= 3 || !isOpen()) {
                                 close();
                                 return false;
                             }
-                            if (isOpen()) {
-                                if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains(formatNumb(quantity))) {
-                                    changeQuantity = false;
-                                    break;
-                                }
-                                if (Interfaces.getComponent(GE_INTERFACE, 168).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
-                                    Interfaces.getComponent(GE_INTERFACE, 168).click();
-                                    //has to wait for interface to show up
-                                    Task.sleep(Task.random(900, 1000));
-                                }
-                                if (Interfaces.getComponent(752, 4).getText().contains("you wish to purchase")) {
-                                    Keyboard.sendTextInstant(Integer.toString(quantity), true);
-                                }
-                                //prevents spam clicking
-                                Task.sleep(Task.random(1000, 1500));
-                                if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains(formatNumb(quantity))) {
-                                    changeQuantity = false;
-                                }
-                            } else {
-                                return false;
+                            if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains(formatNumb(quantity))) {
+                                changeQuantity = false;
+                                break;
+                            }
+                            if (Interfaces.getComponent(GE_INTERFACE, 168).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
+                                Interfaces.getComponent(GE_INTERFACE, 168).click();
+                                //has to wait for interface to show up
+                                Task.sleep(Task.random(900, 1000));
+                            }
+                            if (Interfaces.getComponent(752, 4).getText().contains("you wish to purchase")) {
+                                Keyboard.sendTextInstant(Integer.toString(quantity), true);
+                            }
+                            //prevents spam clicking
+                            Task.sleep(Task.random(1000, 1500));
+                            if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains(formatNumb(quantity))) {
+                                changeQuantity = false;
                             }
                             times++;
                         }
                         times = 0;
                         log.severe("BUY: Quan: " + changeQuantity + " Price: " + changePrice);
                         while (changePrice && !changeQuantity) {
-                            if (times >= 3) {
+                            if (times >= 3 || !isOpen()) {
                                 close();
                                 return false;
                             }
-                            if (isOpen()) {
-                                if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains(formatNumb(price))) {
-                                    changePrice = false;
-                                    break;
-                                }
-                                if (Interfaces.getComponent(GE_INTERFACE, 168).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
-                                    Interfaces.getComponent(GE_INTERFACE, 168).click();
-                                     //has to wait for interface to show up
-                                    Task.sleep(Task.random(700, 900));
-                                }
-                                if (Interfaces.getComponent(752, 4).getText().contains("you wish to buy")) {
-                                    Keyboard.sendTextInstant(Integer.toString(price), true);
-                                }
-                                //prevents spam clicking
-                                Task.sleep(Task.random(1000, 1500));
-                                if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains(formatNumb(price))) {
-                                    changePrice = false;
-                                }
-                            } else {
-                                return false;
+                            if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains(formatNumb(price))) {
+                                changePrice = false;
+                                break;
+                            }
+                            if (Interfaces.getComponent(GE_INTERFACE, 168).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
+                                Interfaces.getComponent(GE_INTERFACE, 168).click();
+                                //has to wait for interface to show up
+                                Task.sleep(Task.random(700, 900));
+                            }
+                            if (Interfaces.getComponent(752, 4).getText().contains("you wish to buy")) {
+                                Keyboard.sendTextInstant(Integer.toString(price), true);
+                            }
+                            //prevents spam clicking
+                            Task.sleep(Task.random(1000, 1500));
+                            if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains(formatNumb(price))) {
+                                changePrice = false;
                             }
                             times++;
                         }
@@ -264,10 +256,7 @@ public class Test extends Script {
          */
         public static boolean sell(String itemName, int slotNumber, int quantity, int price) {
             SLOT = slotNumber;
-            if (slotNumber == 0 || slotNumber > 5) {
-                return false;
-            }
-            if (!Inventory.contains(itemName)) {
+            if (slotNumber == 0 || slotNumber > 5 || !Inventory.contains(itemName)) {
                 return false;
             }
             if (isOpen()) {
@@ -295,62 +284,52 @@ public class Test extends Script {
                 }
                 log.severe("isSellin :" + isSelling());
                 if (!isSelling() && offeredItem) {
-                    boolean changeQuantity;
-                    changeQuantity = quantity > 1;
-                    boolean changePrice;
-                    changePrice = price > 1;
+                    boolean changeQuantity = quantity > 1;
+                    boolean changePrice = price > 1;
                     int times = 0;
                     while (changeQuantity) {
-                        if (times == 3) {
+                        if (times == 3 || !isOpen()) {
                             close();
                             return false;
                         }
-                        if (isOpen()) {
-                            if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains(formatNumb(quantity))) {
-                                changeQuantity = false;
-                                break;
-                            }
-                            if (Interfaces.getComponent(GE_INTERFACE, 168).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
-                                Interfaces.getComponent(GE_INTERFACE, 168).click();
-                                //has to wait for interface to show up
-                                Task.sleep(Task.random(700, 900));
-                            }
-                            if (Interfaces.getComponent(752, 4).getText().contains("amount you wish to")) {
-                                Keyboard.sendTextInstant(Integer.toString(quantity), true);
-                            }
-                            //prevents spam clicking
-                            Task.sleep(Task.random(1000, 1500));
-                            if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains(formatNumb(quantity))) {
-                                changeQuantity = false;
-                            }
-                        } else {
-                            return false;
+                        if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains(formatNumb(quantity))) {
+                            changeQuantity = false;
+                            break;
+                        }
+                        if (Interfaces.getComponent(GE_INTERFACE, 168).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
+                            Interfaces.getComponent(GE_INTERFACE, 168).click();
+                            //has to wait for interface to show up
+                            Task.sleep(Task.random(700, 900));
+                        }
+                        if (Interfaces.getComponent(752, 4).getText().contains("amount you wish to")) {
+                            Keyboard.sendTextInstant(Integer.toString(quantity), true);
+                        }
+                        //prevents spam clicking
+                        Task.sleep(Task.random(1000, 1500));
+                        if (Interfaces.getComponent(GE_INTERFACE, 148).getText() != null && Interfaces.getComponent(GE_INTERFACE, 148).getText().contains(formatNumb(quantity))) {
+                            changeQuantity = false;
                         }
                         times++;
                     }
                     times = 0;
                     log.severe("SELL: Quan: " + changeQuantity + " Price: " + changePrice);
                     while (changePrice && !changeQuantity) {
-                        if (times == 3) {
+                        if (times == 3 || !isOpen()) {
                             close();
                             return false;
                         }
-                        if (isOpen()) {
-                            if (Interfaces.getComponent(GE_INTERFACE, 177).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
-                                Interfaces.getComponent(GE_INTERFACE, 177).click();
-                                //has to wait for interface to show up
-                                Task.sleep(Task.random(700, 900));
-                            }
-                            if (Interfaces.getComponent(752, 4).getText().contains("you wish to sell")) {
-                                Keyboard.sendTextInstant(Integer.toString(price), true);
-                            }
-                            //prevents spam clicking
-                            Task.sleep(Task.random(1000, 1500));
-                            if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains(formatNumb(price))) {
-                                changePrice = false;
-                            }
-                        } else {
-                            return false;
+                        if (Interfaces.getComponent(GE_INTERFACE, 177).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
+                            Interfaces.getComponent(GE_INTERFACE, 177).click();
+                            //has to wait for interface to show up
+                            Task.sleep(Task.random(700, 900));
+                        }
+                        if (Interfaces.getComponent(752, 4).getText().contains("you wish to sell")) {
+                            Keyboard.sendTextInstant(Integer.toString(price), true);
+                        }
+                        //prevents spam clicking
+                        Task.sleep(Task.random(1000, 1500));
+                        if (Interfaces.getComponent(GE_INTERFACE, 153).getText() != null && Interfaces.getComponent(GE_INTERFACE, 153).getText().contains(formatNumb(price))) {
+                            changePrice = false;
                         }
                         times++;
                     }
@@ -644,6 +623,7 @@ public class Test extends Script {
             return !isOpen();
         }
 
+
         /**
          * Opens the GrandExchange
          *
@@ -809,6 +789,28 @@ public class Test extends Script {
                 return str.replaceAll("(^[^<]+>|<[^>]+>|<[^>]+$)", "");
             }
             return "";
+        }
+
+        /**Searches google to grab the ID
+         *
+         * @param itemName item to search
+         * @return possible id for the item
+         */
+        public static int searchGoogleForID(final String itemName) {
+            try {
+                final URL url = new URL("http://www.google.com/search?&q=" + itemName.replace(" ", "+") + "+runescape+grand+exchange");
+                final BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+                String input;
+                while ((input = br.readLine()) != null) {
+                    if(input.contains("viewitem.ws")) {
+                        final int startIndex = input.indexOf("viewitem.ws") + 16;
+                        final int endIndex = input.contains("&scale=") ? input.indexOf("&scale=", startIndex) : input.indexOf('"', startIndex);
+                        return Integer.parseInt(input.substring(startIndex, endIndex));
+                    }
+                }
+            } catch (final IOException ignored) {
+            }
+            return 0;
         }
 
         /**

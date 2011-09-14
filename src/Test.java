@@ -13,8 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,9 +33,7 @@ public class Test extends Script {
 
     @Override
     public int loop() {
-        Ge.itemTableMethods check2 = new Ge.itemTable();
-        check2.loadTable();
-        log.severe("ID for steel bar:" +Ge.searchYahooForID("steel bar"));
+        Ge.tableLoad();
         if (!Ge.bankCollectIsOpen()) {
             Ge.bankCollectClose();
         }
@@ -151,7 +148,6 @@ public class Test extends Script {
                     log.severe("BUY: searching, has not searched!");
                 }
                 if (isSearching() && hasSearched(searchName)) {
-                    log.severe("Inside HERE!");
                     boolean foundItem = false;
                     if (findItem() && !foundItem) {
                         boolean done = false;
@@ -481,35 +477,35 @@ public class Test extends Script {
         }
 
         /**
-         * Loads up a hash map of all Runescape IDs
+         * Loads up a hash table of all Runescape IDs
          *
-         * @return true if the map is loaded/ is loading
+         * @return true if the hash table is loaded/ is loading
          */
-        public static boolean MapLoad() {
-            Ge.itemTableMethods map = new Ge.itemTable();
-            return map.loadTable();
+        public static boolean tableLoad() {
+            Ge.itemTableMethods table = new Ge.itemTable();
+            return table.loadTable();
         }
 
         /**
-         * Gets the id from the name from the Map
+         * Gets the id from the name from the hash table
          *
          * @param name to lookup to get the ID
          * @return correct ID for the name; 0 if the ID can't be found
          */
-        public static int MapGetID(String name) {
-            Ge.itemTableMethods map = new Ge.itemTable();
-            return map.getID(name);
+        public static int tableGetID(String name) {
+            Ge.itemTableMethods table = new Ge.itemTable();
+            return table.getID(name);
         }
 
         /**
-         * Gets the itemname from Map rather than looking it up
+         * Gets the itemname from table rather than looking it up
          *
          * @param id to look up
          * @return Name for the id; null if it can't be found
          */
-        public static String MapGetName(int id) {
-            Ge.itemTableMethods map = new Ge.itemTable();
-            return map.getName(id);
+        public static String tableGetName(int id) {
+            Ge.itemTableMethods table = new Ge.itemTable();
+            return table.getName(id);
         }
 
         /**
@@ -859,8 +855,8 @@ public class Test extends Script {
 
         public static class itemTable extends Thread implements itemTableMethods {
             private static final String TABLE_URL = "https://raw.github.com/Dwarfeh/GrandExchange/206093061353f57f5e192d45c64a15bf5b73fc2e/src/IDS";
-            private static final Map<String, Integer > itemStringList = new HashMap<String, Integer>();
-            private static final Map<Integer, String > itemIDList = new HashMap<Integer, String>();
+            private static final Hashtable<String, Integer > itemStringList = new Hashtable<String, Integer>();
+            private static final Hashtable<Integer, String > itemIDList = new Hashtable<Integer, String>();
 
             public boolean loadTable() {
                 if (itemStringList.isEmpty() || itemIDList.isEmpty()) {
@@ -902,15 +898,16 @@ public class Test extends Script {
                             if (word.length() > 1 && !itemStringList.containsKey(ItemNumber[0])) {
                                 itemStringList.put(ItemNumber[0], Integer.parseInt(ItemNumber[1]));
                                 itemIDList.put(Integer.parseInt(ItemNumber[1]), ItemNumber[0]);
-                                log.severe("Added to String: " +ItemNumber[0] + " Added to int: " +Integer.parseInt(ItemNumber[1]));
                             }
-                            interrupt();
                         }
+                        log.severe("Table loaded successfully");
+                        itemLoader.interrupt();
                     } catch(IOException e) {
                         log.severe(e.toString());
                         log.severe("Loading table failed!");
+                        itemLoader.interrupt();
                     }
-                    interrupt();
+                    itemLoader.interrupt();
                 }
             });
         }

@@ -1,4 +1,4 @@
-import org.rsbot.gui.AccountManager;
+import org.rsbot.ui.AccountManager;
 import org.rsbot.script.Script;
 import org.rsbot.script.ScriptManifest;
 import org.rsbot.script.concurrent.Task;
@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +22,7 @@ import java.util.regex.Pattern;
 @ScriptManifest(authors = {"Dwarfeh"}, keywords = {"test"}, name = "aaaa IM FIRST", description = "Trololol", version = 1.0)
 public class Test extends Script {
     boolean done = false;
-    int buyPrice = 19;
+    int buyPrice = 20;
     int buyAmount = 1;
     int sellAmount = 1;
     int sellPrice = buyPrice + 2;
@@ -32,6 +34,9 @@ public class Test extends Script {
 
     @Override
     public int loop() {
+        Ge.itemTableMethods check2 = new Ge.itemTable();
+        check2.loadTable();
+        log.severe("ID for steel bar:" +Ge.searchYahooForID("steel bar"));
         if (!Ge.bankCollectIsOpen()) {
             Ge.bankCollectClose();
         }
@@ -176,9 +181,8 @@ public class Test extends Script {
                         }
                     }
                     if (foundItem) {
-                        boolean changeQuantity = true;
-                        boolean changePrice;
-                        changePrice = price > 1;
+                        boolean changeQuantity = quantity > 1;
+                        boolean changePrice = price > 1;
                         int times = 0;
                         while (changeQuantity) {
                             if (times >= 3 || !isOpen()) {
@@ -474,6 +478,38 @@ public class Test extends Script {
         public static int getApproximateAmount(int slot) {
             GEBuyMethods check2 = new GEBuy(slot);
             return check2.getApproximateAmount();
+        }
+
+        /**
+         * Loads up a hash map of all Runescape IDs
+         *
+         * @return true if the map is loaded/ is loading
+         */
+        public static boolean MapLoad() {
+            Ge.itemTableMethods map = new Ge.itemTable();
+            return map.loadTable();
+        }
+
+        /**
+         * Gets the id from the name from the Map
+         *
+         * @param name to lookup to get the ID
+         * @return correct ID for the name; 0 if the ID can't be found
+         */
+        public static int MapGetID(String name) {
+            Ge.itemTableMethods map = new Ge.itemTable();
+            return map.getID(name);
+        }
+
+        /**
+         * Gets the itemname from Map rather than looking it up
+         *
+         * @param id to look up
+         * @return Name for the id; null if it can't be found
+         */
+        public static String MapGetName(int id) {
+            Ge.itemTableMethods map = new Ge.itemTable();
+            return map.getName(id);
         }
 
         /**
@@ -791,14 +827,14 @@ public class Test extends Script {
             return "";
         }
 
-        /**Searches google to grab the ID
+        /**Searches Yahoo to grab the ID
          *
          * @param itemName item to search
          * @return possible id for the item
          */
-        public static int searchGoogleForID(final String itemName) {
+        public static int searchYahooForID(final String itemName) {
             try {
-                final URL url = new URL("http://www.google.com/search?&q=" + itemName.replace(" ", "+") + "+runescape+grand+exchange");
+                final URL url = new URL("http://search.yahoo.com/search;_ylt=?p=" + itemName.replace(" ", "+") + "+runescape+grand+exchange");
                 final BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
                 String input;
                 while ((input = br.readLine()) != null) {
@@ -811,6 +847,72 @@ public class Test extends Script {
             } catch (final IOException ignored) {
             }
             return 0;
+        }
+
+        private static interface itemTableMethods {
+            public boolean loadTable();
+
+            public int getID(String item);
+
+            public String getName(int id);
+        }
+
+        public static class itemTable extends Thread implements itemTableMethods {
+            private static final String TABLE_URL = "https://raw.github.com/Dwarfeh/GrandExchange/206093061353f57f5e192d45c64a15bf5b73fc2e/src/IDS";
+            private static final Map<String, Integer > itemStringList = new HashMap<String, Integer>();
+            private static final Map<Integer, String > itemIDList = new HashMap<Integer, String>();
+
+            public boolean loadTable() {
+                if (itemStringList.isEmpty() || itemIDList.isEmpty()) {
+                    itemLoader.start();
+                    return true;
+                }
+                return false;
+            }
+
+            public int getID(String item) {
+                item = item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
+                try {
+                    return itemStringList.get(item);
+                } catch (Exception e) {
+                return 0;
+                }
+            }
+
+            public String getName(int id) {
+                try {
+                    return itemIDList.get(id);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+
+            Thread itemLoader = new Thread(new Runnable() {
+
+
+                public void run() {
+                    try {
+                        URL url = new URL(TABLE_URL);
+                        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+                        String line, lines = "";
+                        while((line = in.readLine()) != null) {
+                            lines += line + "\n";
+                            String word = line.toString();
+                            String ItemNumber[] = line.toString().split(":");
+                            if (word.length() > 1 && !itemStringList.containsKey(ItemNumber[0])) {
+                                itemStringList.put(ItemNumber[0], Integer.parseInt(ItemNumber[1]));
+                                itemIDList.put(Integer.parseInt(ItemNumber[1]), ItemNumber[0]);
+                                log.severe("Added to String: " +ItemNumber[0] + " Added to int: " +Integer.parseInt(ItemNumber[1]));
+                            }
+                            interrupt();
+                        }
+                    } catch(IOException e) {
+                        log.severe(e.toString());
+                        log.severe("Loading table failed!");
+                    }
+                    interrupt();
+                }
+            });
         }
 
         /**

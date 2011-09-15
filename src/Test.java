@@ -20,14 +20,10 @@ import java.util.regex.Pattern;
 
 @ScriptManifest(authors = {"Dwarfeh"}, keywords = {"test"}, name = "aaaa IM FIRST", description = "Trololol", version = 1.0)
 public class Test extends Script {
-    boolean done = false;
-    int buyPrice = 20;
-    int buyAmount = 1;
-    int sellAmount = 1;
-    int sellPrice = buyPrice + 2;
-    String item23 = "Steel arrow"; //"Strength potion (4)"
+    private final int buyPrice = 20;
+    private int buyAmount = 1;
 
-    public boolean canBuy() {
+    boolean canBuy() {
         return Inventory.contains("Coins") && Inventory.getItem("Coins").getStackSize() >= (buyPrice * buyAmount);
     }
 
@@ -43,12 +39,14 @@ public class Test extends Script {
         if (Ge.isOpen()) {
             int t = Ge.getEmptySlot();
             if (t > 0) {
+                String item23 = "Steel arrow";
                 if (canBuy()) {
                     buyAmount = Inventory.getItem(995).getStackSize() / buyPrice / Ge.getAllEmptySlots();
                     Ge.buy(item23, t, buyAmount, buyPrice);
                 }
                 if (!canBuy() && Inventory.contains(item23) && Ge.getAllEmptySlots() > 0) {
-                    sellAmount = Inventory.getItem(Ge.getItemID(item23)).getStackSize() / Ge.getAllEmptySlots();
+                    int sellAmount = Inventory.getItem(Ge.getItemID(item23)).getStackSize() / Ge.getAllEmptySlots();
+                    int sellPrice = buyPrice + 2;
                     Ge.sell(item23, t, sellAmount, sellPrice);
                 }
                 if (!canBuy() && !Inventory.contains(item23) || Ge.getAllEmptySlots() == 0) {
@@ -98,7 +96,6 @@ public class Test extends Script {
         public static final int GE_CLOSE = 14;
         public static final int SEARCH = 389;
         public static final int COLLECT_INTERFACE = 109;
-        public static int SLOT = 0;
 
         private static final Pattern PATTERN = Pattern.compile("(?i)<td><img src=\".+obj_sprite\\.gif\\?id=(\\d+)\" alt=\"(.+)\"");
 
@@ -115,7 +112,6 @@ public class Test extends Script {
          * @return <tt>true</tt> if bought successfully; otherwise <tt>false</tt>
          */
         public static boolean buy(String itemName, int slotNumber, int quantity, int price) {
-            SLOT = slotNumber;
             itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1).toLowerCase();
             String Sep[] = itemName.split(" ");
             String searchName = null;
@@ -255,7 +251,6 @@ public class Test extends Script {
          * @return <tt>true</tt> if sold successfully; otherwise <tt>false</tt>
          */
         public static boolean sell(String itemName, int slotNumber, int quantity, int price) {
-            SLOT = slotNumber;
             if (slotNumber == 0 || slotNumber > 5 || !Inventory.contains(itemName)) {
                 return false;
             }
@@ -408,7 +403,6 @@ public class Test extends Script {
             if (isOpen()) {
                 int total = 0;
                 for (int i = 1; i <= getTotalSlots(); ) {
-                    SLOT = i;
                     GEBuyMethods check2 = new GEBuy(i);
                     int check = check2.getInterface();
                     if (Interfaces.getComponent(GE_INTERFACE, check).getComponent(10).getText().equals("Empty")) {
@@ -431,7 +425,6 @@ public class Test extends Script {
         public static int getEmptySlot() {
             if (isOpen()) {
                 for (int i = 1; i <= getTotalSlots(); ) {
-                    SLOT = i;
                     GEBuyMethods check2 = new GEBuy(i);
                     int check = check2.getInterface();
                     if (Interfaces.getComponent(GE_INTERFACE, check).getComponent(10).getText().equals("Empty")) {
@@ -883,7 +876,7 @@ public class Test extends Script {
                 }
             }
 
-            Thread itemLoader = new Thread(new Runnable() {
+            final Thread itemLoader = new Thread(new Runnable() {
 
 
                 public void run() {
@@ -893,9 +886,8 @@ public class Test extends Script {
                         String line, lines = "";
                         while((line = in.readLine()) != null) {
                             lines += line + "\n";
-                            String word = line.toString();
-                            String ItemNumber[] = line.toString().split(":");
-                            if (word.length() > 1 && !itemStringList.containsKey(ItemNumber[0])) {
+                            String ItemNumber[] = line.split(":");
+                            if (line.length() > 1 && !itemStringList.containsKey(ItemNumber[0])) {
                                 itemStringList.put(ItemNumber[0], Integer.parseInt(ItemNumber[1]));
                                 itemIDList.put(Integer.parseInt(ItemNumber[1]), ItemNumber[0]);
                             }
@@ -1026,7 +1018,6 @@ public class Test extends Script {
             private final int COLLECT_CLOSE = 14;
 
             public BankCollect(int slot) {
-                SLOT = slot;
                 switch (slot) {
                     case 1:
                         Interface = 19;
@@ -1164,8 +1155,9 @@ public class Test extends Script {
                 if (bankIsOpen()) {
                     Interfaces.getComponent(COLLECT_INTERFACE, COLLECT_CLOSE).click();
                     Task.sleep(Task.random(700, 900));
+                    return true;
                 }
-                return true;
+                return !bankIsOpen();
             }
 
         }
@@ -1188,10 +1180,10 @@ public class Test extends Script {
             private int Interface = 0;
             private int buyClick = 0;
             private int sellClick = 0;
-            private int completeWidth = 124;
-            private int height = 13;
-            private int COMPLETION_BAR_INTERFACE = 13;
-            private int STACKSIZE_INTERFACE = 17;
+            private final int completeWidth = 124;
+            private final int height = 13;
+            private final int COMPLETION_BAR_INTERFACE = 13;
+            private final int STACKSIZE_INTERFACE = 17;
 
 
             public GEBuy(int slot) {

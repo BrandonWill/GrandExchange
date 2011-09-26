@@ -1,7 +1,7 @@
+import org.rsbot.bot.concurrent.Task;
 import org.rsbot.ui.AccountManager;
 import org.rsbot.script.Script;
 import org.rsbot.script.ScriptManifest;
-import org.rsbot.script.concurrent.Task;
 import org.rsbot.script.methods.*;
 import org.rsbot.script.methods.ui.Interfaces;
 import org.rsbot.script.wrappers.Interface;
@@ -20,8 +20,12 @@ import java.util.regex.Pattern;
 
 @ScriptManifest(authors = {"Dwarfeh"}, keywords = {"test"}, name = "aaaa IM FIRST", description = "Trololol", version = 1.0)
 public class Test extends Script {
+    boolean done = false;
     private final int buyPrice = 20;
     private int buyAmount = 1;
+    int sellAmount = 1;
+    int sellPrice = buyPrice + 2;
+    String item23 = "Steel arrow"; //"Strength potion (4)"
 
     boolean canBuy() {
         return Inventory.contains("Coins") && Inventory.getItem("Coins").getStackSize() >= (buyPrice * buyAmount);
@@ -96,6 +100,7 @@ public class Test extends Script {
         public static final int GE_CLOSE = 14;
         public static final int SEARCH = 389;
         public static final int COLLECT_INTERFACE = 109;
+        public static int SLOT = 0;
 
         private static final Pattern PATTERN = Pattern.compile("(?i)<td><img src=\".+obj_sprite\\.gif\\?id=(\\d+)\" alt=\"(.+)\"");
 
@@ -112,6 +117,7 @@ public class Test extends Script {
          * @return <tt>true</tt> if bought successfully; otherwise <tt>false</tt>
          */
         public static boolean buy(String itemName, int slotNumber, int quantity, int price) {
+            SLOT = slotNumber;
             itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1).toLowerCase();
             String Sep[] = itemName.split(" ");
             String searchName = null;
@@ -144,6 +150,7 @@ public class Test extends Script {
                     log.severe("BUY: searching, has not searched!");
                 }
                 if (isSearching() && hasSearched(searchName)) {
+                    log.severe("Inside HERE!");
                     boolean foundItem = false;
                     if (findItem() && !foundItem) {
                         boolean done = false;
@@ -251,6 +258,7 @@ public class Test extends Script {
          * @return <tt>true</tt> if sold successfully; otherwise <tt>false</tt>
          */
         public static boolean sell(String itemName, int slotNumber, int quantity, int price) {
+            SLOT = slotNumber;
             if (slotNumber == 0 || slotNumber > 5 || !Inventory.contains(itemName)) {
                 return false;
             }
@@ -403,6 +411,7 @@ public class Test extends Script {
             if (isOpen()) {
                 int total = 0;
                 for (int i = 1; i <= getTotalSlots(); ) {
+                    SLOT = i;
                     GEBuyMethods check2 = new GEBuy(i);
                     int check = check2.getInterface();
                     if (Interfaces.getComponent(GE_INTERFACE, check).getComponent(10).getText().equals("Empty")) {
@@ -425,6 +434,7 @@ public class Test extends Script {
         public static int getEmptySlot() {
             if (isOpen()) {
                 for (int i = 1; i <= getTotalSlots(); ) {
+                    SLOT = i;
                     GEBuyMethods check2 = new GEBuy(i);
                     int check = check2.getInterface();
                     if (Interfaces.getComponent(GE_INTERFACE, check).getComponent(10).getText().equals("Empty")) {
@@ -475,7 +485,7 @@ public class Test extends Script {
          * @return true if the hash table is loaded/ is loading
          */
         public static boolean tableLoad() {
-            Ge.itemTableMethods table = new Ge.itemTable();
+            itemTableMethods table = new itemTable();
             return table.loadTable();
         }
 
@@ -486,7 +496,7 @@ public class Test extends Script {
          * @return correct ID for the name; 0 if the ID can't be found
          */
         public static int tableGetID(String name) {
-            Ge.itemTableMethods table = new Ge.itemTable();
+            itemTableMethods table = new itemTable();
             return table.getID(name);
         }
 
@@ -497,7 +507,7 @@ public class Test extends Script {
          * @return Name for the id; null if it can't be found
          */
         public static String tableGetName(int id) {
-            Ge.itemTableMethods table = new Ge.itemTable();
+            itemTableMethods table = new itemTable();
             return table.getName(id);
         }
 
@@ -886,11 +896,14 @@ public class Test extends Script {
                         String line, lines = "";
                         while((line = in.readLine()) != null) {
                             lines += line + "\n";
+                            String word = line.toString();
                             String ItemNumber[] = line.split(":");
                             if (line.length() > 1 && !itemStringList.containsKey(ItemNumber[0])) {
                                 itemStringList.put(ItemNumber[0], Integer.parseInt(ItemNumber[1]));
                                 itemIDList.put(Integer.parseInt(ItemNumber[1]), ItemNumber[0]);
+                                log.severe("Added to String: " +ItemNumber[0] + " Added to int: " +Integer.parseInt(ItemNumber[1]));
                             }
+                            interrupt();
                         }
                         log.severe("Table loaded successfully");
                         itemLoader.interrupt();
@@ -1018,6 +1031,7 @@ public class Test extends Script {
             private final int COLLECT_CLOSE = 14;
 
             public BankCollect(int slot) {
+                SLOT = slot;
                 switch (slot) {
                     case 1:
                         Interface = 19;
@@ -1299,7 +1313,7 @@ public class Test extends Script {
             }
 
             public boolean interact() {
-                Mouse.click(npc.getPoint(), false);
+                Mouse.click(npc.getCentralPoint(), false);
                 if (npc.getName().equals("Banker")) {
                     return Menu.isOpen() && Menu.clickIndex(Menu.getIndex(action));
                 }

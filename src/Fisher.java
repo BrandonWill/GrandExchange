@@ -1,25 +1,19 @@
-import org.rsbot.bot.BotComposite;
-import org.rsbot.bot.Context;
-import org.rsbot.bot.accessors.Model;
 import org.rsbot.bot.concurrent.Task;
 import org.rsbot.bot.event.MessageEvent;
 import org.rsbot.bot.event.listener.MessageListener;
 import org.rsbot.bot.event.listener.PaintListener;
-import org.rsbot.bot.input.InputManager;
 import org.rsbot.script.Script;
 import org.rsbot.script.ScriptManifest;
-import org.rsbot.script.methods.*;
 import org.rsbot.script.methods.Menu;
+import org.rsbot.script.methods.*;
 import org.rsbot.script.methods.tabs.Inventory;
 import org.rsbot.script.methods.ui.Camera;
-import org.rsbot.script.methods.ui.Interfaces;
-
-import org.rsbot.script.wrappers.*;
-import org.rsbot.script.wrappers.Character;
-
+import org.rsbot.script.wrappers.InterfaceComponent;
+import org.rsbot.script.wrappers.Item;
+import org.rsbot.script.wrappers.NPC;
+import org.rsbot.script.wrappers.Path;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 
 @ScriptManifest(authors = { "Dwarfeh" }, keywords = { "fish, fisher, crayfish" }, name = "Dwarfeh's Fisher", description = "Fishes Crayfish", version = 1.0)
 public class Fisher extends Script implements MessageListener, PaintListener {

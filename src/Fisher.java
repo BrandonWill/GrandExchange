@@ -1,32 +1,49 @@
+import org.rsbot.bot.BotComposite;
 import org.rsbot.bot.Context;
+import org.rsbot.bot.accessors.Model;
 import org.rsbot.bot.concurrent.Task;
+import org.rsbot.bot.event.MessageEvent;
+import org.rsbot.bot.event.listener.MessageListener;
+import org.rsbot.bot.event.listener.PaintListener;
 import org.rsbot.bot.input.InputManager;
 import org.rsbot.script.Script;
 import org.rsbot.script.ScriptManifest;
 import org.rsbot.script.methods.*;
-import org.rsbot.script.methods.Players;
-import org.rsbot.script.methods.Walking;
-import org.rsbot.script.methods.tabs.Inventory;
+import org.rsbot.script.methods.Menu;
 import org.rsbot.script.methods.ui.Interfaces;
-import org.rsbot.script.wrappers.NPC;
-import org.rsbot.script.wrappers.Path;
-import org.rsbot.script.wrappers.Tile;
+
+import org.rsbot.script.wrappers.*;
 import org.rsbot.script.wrappers.Character;
+
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
 @ScriptManifest(authors = { "Dwarfeh" }, keywords = { "fish, fisher, crayfish" }, name = "Dwarfeh's Fisher", description = "Fishes Crayfish", version = 1.0)
-public class Fisher extends Script {
+public class Fisher extends Script implements MessageListener, PaintListener {
     int fishSpot = 6996;
+    int[] noDrop = { 13431, 995 };
+    int fishCaught = 0;
 
     @Override
     protected int loop() {
+        Mouse.setPrecisionSpeed(7);
         if (Interfaces.canContinue()) {
-            Interfaces.clickContinue();
+            Interfaces.clickCont();
         }
         if (Inventory.isFull()) {
-            Inventory.dropAllExcept(13431, 995);
+            //Inventory.dropAllExcept(13431, 995);
+            for (int i = 0; i < 28; i++) {
+                if (Inventory.getItemAt(i).getID() != noDrop[0] && Inventory.getItemAt(i).getID() != noDrop[1]) {
+                    Mouse.setPrecisionSpeed(1);
+                    Item fish = Inventory.getItemAt(i);
+                    Mouse.move(fish.getComponent().getAbsLocation());
+                    Mouse.click(false);
+                    if (Menu.isOpen()) {
+                        Menu.click("Drop");
+                    }
+                }
+            }
         }
         while (Players.getLocal().getAnimation() == 10009 && !Interfaces.canContinue()) {
             sleep(500);
@@ -34,11 +51,15 @@ public class Fisher extends Script {
         if (!Inventory.isFull() && Players.getLocal().getAnimation() != 10009) {
             NPC spot = NPCs.getNearest(fishSpot);
             if (spot != null) {
+                Camera.turnTo(spot);
                 if (spot.isOnScreen()) {
                     Point p = spot.getCentralPoint();
-                    org.rsbot.script.methods.Mouse.hop(p);
-                    org.rsbot.script.methods.Mouse.click(true);
-                    Task.sleep(700);
+                    Mouse.hop(p);
+                    Mouse.click(false);
+                    if (Menu.isOpen()) {
+                        Menu.click("Cage");
+                    }
+                    Task.sleep(1500);
                 }
                 if (!spot.isOnScreen()) {
                     Camera.turnTo(spot);
@@ -51,6 +72,25 @@ public class Fisher extends Script {
             }
         }
         return 300;
+    }
+
+    public void messageReceived(MessageEvent e) {
+        String text = e.getMessage().toLowerCase();
+        if (text.contains("catch a")) {
+            fishCaught++;
+        }
+    }
+
+    public void onRepaint(Graphics g1) {
+        Graphics2D g = (Graphics2D) g1;
+        g.setStroke(new BasicStroke(2));
+        g.setColor(Color.gray);
+        g.draw3DRect(14, 74, 100, 30, true);
+        g.setColor(new Color(0, 0, 0, 70));
+        g.fill3DRect(14, 74, 100, 30, true);
+        g.setColor(Color.white);
+        g.setFont(new Font("Arial", 0, 9));
+        g.drawString("Fish caught: " +fishCaught, 18, 85);
     }
 
     public static class Camera {
@@ -170,6 +210,51 @@ public class Fisher extends Script {
 
         public static int getPitch() {
             return (int) ((Context.get().client.getCameraPitch() - 1024) / 20.48);
+        }
+    }
+    public static class Inventory extends org.rsbot.script.methods.tabs.Inventory {
+
+        /**
+         * Checks whether or not your inventory contains the provided item name.
+         *
+         * @param name The item(s) you wish to evaluate.
+         * @return <tt>true</tt> if your inventory contains an item with the name
+         *         provided; otherwise <tt>false</tt>.
+         */
+        public static boolean contains(final String name) {
+            return getItem(name) != null;
+        }
+
+        /**
+         * Gets the first item in the inventory containing any of the provided names.
+         *
+         *
+         * @param names The names of the item to find.
+         * @return The first <tt>RSItem</tt> for the given name(s); otherwise null.
+         */
+        public static Item getItem(final String... names) {
+            for (final Item item : getItems()) {
+                String name = item.getName();
+                if (name != null) {
+                    name = name.toLowerCase();
+                    for (final String n : names) {
+                        if (n != null && name.contains(n.toLowerCase())) {
+                            return item;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
+    public static class Interfaces extends org.rsbot.script.methods.ui.Interfaces {
+
+        public static boolean clickCont() {
+            final InterfaceComponent cont = getContinueComponent();
+            Mouse.move(cont.getAbsLocation());
+            Mouse.click(true);
+            return cont != null && cont.isValid();
         }
     }
 }

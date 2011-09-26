@@ -1,9 +1,14 @@
 import org.rsbot.bot.concurrent.Task;
-import org.rsbot.script.methods.*;
+import org.rsbot.script.methods.Account;
+import org.rsbot.script.methods.Calculations;
+import org.rsbot.script.methods.Keyboard;
+import org.rsbot.script.methods.Menu;
+import org.rsbot.script.methods.Mouse;
+import org.rsbot.script.methods.Players;
+import org.rsbot.script.methods.NPCs;
 import org.rsbot.script.methods.tabs.Inventory;
 import org.rsbot.script.methods.ui.Interfaces;
 import org.rsbot.script.wrappers.Interface;
-import org.rsbot.script.wrappers.Item;
 import org.rsbot.script.wrappers.NPC;
 import org.rsbot.ui.AccountManager;
 

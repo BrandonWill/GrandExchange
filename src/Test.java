@@ -94,8 +94,8 @@ public class Test extends Script {
     }
 
     public static class Ge {
-        public static final int[] CLERKS = new int[]{2241, 2240, 2593, 1419};
-        public static final int[] BANKERS = new int[]{3293, 3416, 2718, 3418};
+        public static final int[] CLERKS = {2241, 2240, 2593, 1419};
+        public static final int[] BANKERS = {3293, 3416, 2718, 3418};
         public static final int GE_INTERFACE = 105;
         public static final int GE_CLOSE = 14;
         public static final int SEARCH = 389;
@@ -251,7 +251,7 @@ public class Test extends Script {
          *
          * @param itemName   item to sell
          * @param slotNumber slot number to sell from (1-5)
-         * @param quantity   amount to sell
+         * @param quantity   amount to sell. 0 doesn't change quantity
          * @param price      Price to sell from. 0 will leave it as default price
          * @return <tt>true</tt> if sold successfully; otherwise <tt>false</tt>
          */

@@ -169,7 +169,7 @@ public class GrandExchange {
      *
      * @param itemName   item to sell
      * @param slotNumber slot number to sell from (1-5)
-     * @param quantity   amount to sell
+     * @param quantity   amount to sell. 0 doesn't change quantity
      * @param price      Price to sell from. 0 will leave it as default price
      * @return <tt>true</tt> if sold successfully; otherwise <tt>false</tt>
      */

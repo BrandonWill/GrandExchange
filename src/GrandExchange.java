@@ -43,6 +43,7 @@ public class GrandExchange {
         if (itemName.contains(" ")) {
             String Sep[] = itemName.split(" ");
             for (int i = 0; i < Sep.length; i++) {
+                //RSBot doesn't allow us to type (... still clicks correct match though.
                 if (!Sep[i].contains("(")) {
                     if (searchName == null) {
                         searchName = Sep[i];
@@ -87,6 +88,7 @@ public class GrandExchange {
                         }
                     }
                     if (done && index == 0) {
+                        close();
                         return false;
                     }
                     if (done && index > 0) {

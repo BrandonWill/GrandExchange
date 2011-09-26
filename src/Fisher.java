@@ -56,7 +56,7 @@ public class Fisher extends Script implements MessageListener, PaintListener {
                     Point p = spot.getCentralPoint();
                     Mouse.hop(p);
                     Mouse.click(false);
-                    if (Menu.isOpen()) {
+                    if (Menu.isOpen() && Menu.contains("Cage")) {
                         Menu.click("Cage");
                     }
                     Task.sleep(1500);

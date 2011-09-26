@@ -1,5 +1,6 @@
 import org.rsbot.bot.concurrent.Task;
 import org.rsbot.script.methods.*;
+import org.rsbot.script.methods.tabs.Inventory;
 import org.rsbot.script.methods.ui.Interfaces;
 import org.rsbot.script.wrappers.Interface;
 import org.rsbot.script.wrappers.Item;
@@ -1236,40 +1237,6 @@ public class GrandExchange {
 
         public boolean isValid() {
             return npc != null;
-        }
-    }
-    public static class Inventory extends org.rsbot.script.methods.tabs.Inventory {
-
-        /**
-         * Checks whether or not your inventory contains the provided item name.
-         *
-         * @param name The item(s) you wish to evaluate.
-         * @return <tt>true</tt> if your inventory contains an item with the name
-         *         provided; otherwise <tt>false</tt>.
-         */
-        public static boolean contains(final String name) {
-            return getItem(name) != null;
-        }
-
-        /**
-         * Gets the first item in the inventory containing any of the provided names.
-         *
-         * @param names The names of the item to find.
-         * @return The first <tt>RSItem</tt> for the given name(s); otherwise null.
-         */
-        public static Item getItem(final String... names) {
-            for (final Item item : getItems()) {
-                String name = item.getName();
-                if (name != null) {
-                    name = name.toLowerCase();
-                    for (final String n : names) {
-                        if (n != null && name.contains(n.toLowerCase())) {
-                            return item;
-                        }
-                    }
-                }
-            }
-            return null;
         }
     }
 }

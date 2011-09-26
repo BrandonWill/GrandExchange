@@ -100,7 +100,6 @@ public class Test extends Script {
         public static final int GE_CLOSE = 14;
         public static final int SEARCH = 389;
         public static final int COLLECT_INTERFACE = 109;
-        public static int SLOT = 0;
 
         private static final Pattern PATTERN = Pattern.compile("(?i)<td><img src=\".+obj_sprite\\.gif\\?id=(\\d+)\" alt=\"(.+)\"");
 
@@ -117,7 +116,6 @@ public class Test extends Script {
          * @return <tt>true</tt> if bought successfully; otherwise <tt>false</tt>
          */
         public static boolean buy(String itemName, int slotNumber, int quantity, int price) {
-            SLOT = slotNumber;
             itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1).toLowerCase();
             String Sep[] = itemName.split(" ");
             String searchName = null;
@@ -258,7 +256,6 @@ public class Test extends Script {
          * @return <tt>true</tt> if sold successfully; otherwise <tt>false</tt>
          */
         public static boolean sell(String itemName, int slotNumber, int quantity, int price) {
-            SLOT = slotNumber;
             if (slotNumber == 0 || slotNumber > 5 || !Inventory.contains(itemName)) {
                 return false;
             }
@@ -411,7 +408,6 @@ public class Test extends Script {
             if (isOpen()) {
                 int total = 0;
                 for (int i = 1; i <= getTotalSlots(); ) {
-                    SLOT = i;
                     GEBuyMethods check2 = new GEBuy(i);
                     int check = check2.getInterface();
                     if (Interfaces.getComponent(GE_INTERFACE, check).getComponent(10).getText().equals("Empty")) {
@@ -434,7 +430,6 @@ public class Test extends Script {
         public static int getEmptySlot() {
             if (isOpen()) {
                 for (int i = 1; i <= getTotalSlots(); ) {
-                    SLOT = i;
                     GEBuyMethods check2 = new GEBuy(i);
                     int check = check2.getInterface();
                     if (Interfaces.getComponent(GE_INTERFACE, check).getComponent(10).getText().equals("Empty")) {
@@ -1031,7 +1026,6 @@ public class Test extends Script {
             private final int COLLECT_CLOSE = 14;
 
             public BankCollect(int slot) {
-                SLOT = slot;
                 switch (slot) {
                     case 1:
                         Interface = 19;

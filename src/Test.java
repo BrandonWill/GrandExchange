@@ -136,7 +136,7 @@ public class Test extends Script {
                 GEBuyMethods t = new GEBuy(slotNumber);
                 int buyClick = t.getBuyClick();
                 if (!isSearching()) {
-                    Interfaces.getComponent(GE_INTERFACE, buyClick).click();
+                    Interfaces.getComponent(GE_INTERFACE, buyClick).click(true);
                     //has to wait for search bar to come up
                     Task.sleep(Task.random(900, 1000));
                     log.severe("BUY: Not searching, clicking!");
@@ -169,10 +169,10 @@ public class Test extends Script {
                         }
                         if (done && index > 0) {
                             if (!Interfaces.getComponent(389, 4).getComponent(index).isVisible() && Interfaces.getComponent(389, 8).getComponent(5).isVisible()) {
-                                Interfaces.getComponent(389, 8).getComponent(5).click();
+                                Interfaces.getComponent(389, 8).getComponent(5).click(true);
                             }
                             if (Interfaces.getComponent(389, 4).getComponent(index).isVisible()) {
-                                Interfaces.getComponent(389, 4).getComponent(index).click();
+                                Interfaces.getComponent(389, 4).getComponent(index).click(true);
                                 foundItem = true;
                             }
                         }
@@ -191,7 +191,7 @@ public class Test extends Script {
                                 break;
                             }
                             if (Interfaces.getComponent(GE_INTERFACE, 168).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
-                                Interfaces.getComponent(GE_INTERFACE, 168).click();
+                                Interfaces.getComponent(GE_INTERFACE, 168).click(true);
                                 //has to wait for interface to show up
                                 Task.sleep(Task.random(900, 1000));
                             }
@@ -217,7 +217,7 @@ public class Test extends Script {
                                 break;
                             }
                             if (Interfaces.getComponent(GE_INTERFACE, 168).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
-                                Interfaces.getComponent(GE_INTERFACE, 168).click();
+                                Interfaces.getComponent(GE_INTERFACE, 168).click(true);
                                 //has to wait for interface to show up
                                 Task.sleep(Task.random(700, 900));
                             }
@@ -233,7 +233,7 @@ public class Test extends Script {
                         }
                         if (!changePrice && !changeQuantity) {
                             if (Interfaces.getComponent(GE_INTERFACE, 187).getText() != null) {
-                                Interfaces.getComponent(GE_INTERFACE, 187).click();
+                                Interfaces.getComponent(GE_INTERFACE, 187).click(true);
                             }
                             close();
                             return true;
@@ -265,7 +265,7 @@ public class Test extends Script {
                 boolean offerItem = false;
                 boolean offeredItem = false;
                 if (!isSelling()) {
-                    Interfaces.getComponent(GE_INTERFACE, sellClick).click();
+                    Interfaces.getComponent(GE_INTERFACE, sellClick).click(true);
                     log.severe("SELL: Not searching, clicking!");
                     //waits for interface to be valid
                     Task.sleep(Task.random(900, 1000));
@@ -297,7 +297,7 @@ public class Test extends Script {
                             break;
                         }
                         if (Interfaces.getComponent(GE_INTERFACE, 168).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
-                            Interfaces.getComponent(GE_INTERFACE, 168).click();
+                            Interfaces.getComponent(GE_INTERFACE, 168).click(true);
                             //has to wait for interface to show up
                             Task.sleep(Task.random(700, 900));
                         }
@@ -319,7 +319,7 @@ public class Test extends Script {
                             return false;
                         }
                         if (Interfaces.getComponent(GE_INTERFACE, 177).getText() != null && Interfaces.getComponent(GE_INTERFACE, 168).getText().contains("...")) {
-                            Interfaces.getComponent(GE_INTERFACE, 177).click();
+                            Interfaces.getComponent(GE_INTERFACE, 177).click(true);
                             //has to wait for interface to show up
                             Task.sleep(Task.random(700, 900));
                         }
@@ -335,7 +335,7 @@ public class Test extends Script {
                     }
                     if (!changeQuantity && !changePrice) {
                         if (Interfaces.getComponent(GE_INTERFACE, 187).getText() != null) {
-                            Interfaces.getComponent(GE_INTERFACE, 187).click();
+                            Interfaces.getComponent(GE_INTERFACE, 187).click(true);
                         }
                     }
                     close();
@@ -646,7 +646,7 @@ public class Test extends Script {
          */
         public static boolean close() {
             if (isOpen()) {
-                Interfaces.getComponent(GE_INTERFACE, GE_CLOSE).click();
+                Interfaces.getComponent(GE_INTERFACE, GE_CLOSE).click(true);
                 Task.sleep(Task.random(500, 600));
                 return !isOpen();
             }
@@ -1084,11 +1084,11 @@ public class Test extends Script {
             public boolean bankCollectBoth() {
                 if (bankIsOpen()) {
                     if (Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(leftCollect).getActions() != null && Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(leftCollect).getActions().length >= 1) {
-                        Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(leftCollect).click();
+                        Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(leftCollect).click(true);
                         Task.sleep(Task.random(300, 500));
                     }
                     if (Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(rightCollect).getActions() != null && Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(rightCollect).getActions().length >= 1) {
-                        Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(rightCollect).click();
+                        Interfaces.getComponent(COLLECT_INTERFACE, Interface).getComponent(rightCollect).click(true);
                         Task.sleep(Task.random(300, 500));
                     }
                     bankClose();
@@ -1144,11 +1144,11 @@ public class Test extends Script {
                         int left = k.getBankLeftCollect();
                         int right = k.getBankRightCollect();
                         if (Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(left).getActions() != null && Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(left).getActions().length >= 1) {
-                            Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(left).click();
+                            Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(left).click(true);
                             Task.sleep(Task.random(300, 500));
                         }
                         if (Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(right).getActions() != null && Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(right).getActions().length >= 1) {
-                            Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(right).click();
+                            Interfaces.getComponent(COLLECT_INTERFACE, inter).getComponent(right).click(true);
                             Task.sleep(Task.random(300, 500));
                         }
                         i++;
@@ -1161,7 +1161,7 @@ public class Test extends Script {
 
             public boolean bankClose() {
                 if (bankIsOpen()) {
-                    Interfaces.getComponent(COLLECT_INTERFACE, COLLECT_CLOSE).click();
+                    Interfaces.getComponent(COLLECT_INTERFACE, COLLECT_CLOSE).click(true);
                     Task.sleep(Task.random(700, 900));
                     return true;
                 }

@@ -1,10 +1,10 @@
 import org.rsbot.bot.concurrent.Task;
-import org.rsbot.ui.AccountManager;
 import org.rsbot.script.methods.*;
 import org.rsbot.script.methods.ui.Interfaces;
 import org.rsbot.script.wrappers.Interface;
 import org.rsbot.script.wrappers.Item;
 import org.rsbot.script.wrappers.NPC;
+import org.rsbot.ui.AccountManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,17 +39,20 @@ public class GrandExchange {
      */
     public static boolean buy(String itemName, int slotNumber, int quantity, int price) {
         itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1).toLowerCase();
-        String Sep[] = itemName.split(" ");
         String searchName = null;
-        for (int i = 0; i < Sep.length; ) {
-            if (!Sep[i].contains("(")) {
-                if (searchName == null) {
-                    searchName = Sep[i];
-                } else {
-                    searchName += " " + Sep[i];
+        if (itemName.contains(" ")) {
+            String Sep[] = itemName.split(" ");
+            for (int i = 0; i < Sep.length; i++) {
+                if (!Sep[i].contains("(")) {
+                    if (searchName == null) {
+                        searchName = Sep[i];
+                    } else {
+                        searchName += " " + Sep[i];
+                    }
                 }
             }
-            i++;
+        } else {
+            searchName = itemName;
         }
         if (slotNumber == 0 || slotNumber > 5) {
             return false;

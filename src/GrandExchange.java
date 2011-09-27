@@ -48,13 +48,13 @@ public class GrandExchange {
         String searchName = null;
         if (itemName.contains(" ")) {
             String Sep[] = itemName.split(" ");
-            for (int i = 0; i < Sep.length; i++) {
+            for (String aSep : Sep) {
                 //RSBot doesn't allow us to type (... still clicks correct match though.
-                if (!Sep[i].contains("(")) {
+                if (!aSep.contains("(")) {
                     if (searchName == null) {
-                        searchName = Sep[i];
+                        searchName = aSep;
                     } else {
-                        searchName += " " + Sep[i];
+                        searchName += " " + aSep;
                     }
                 }
             }
@@ -813,11 +813,9 @@ public class GrandExchange {
                 try {
                     URL url = new URL(TABLE_URL);
                     BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                    String line, lines = "";
+                    String line;
                     while((line = in.readLine()) != null) {
-                        lines += line + "\n";
-                        String word = line.toString();
-                        String ItemNumber[] = line.split(":");
+                        String[] ItemNumber = line.split(":");
                         if (line.length() > 1 && !itemStringList.containsKey(ItemNumber[0])) {
                             itemStringList.put(ItemNumber[0], Integer.parseInt(ItemNumber[1]));
                             itemIDList.put(Integer.parseInt(ItemNumber[1]), ItemNumber[0]);

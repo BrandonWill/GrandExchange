@@ -9,17 +9,14 @@ import org.rsbot.script.methods.*;
 import org.rsbot.script.methods.tabs.Inventory;
 import org.rsbot.script.methods.ui.Camera;
 import org.rsbot.script.methods.ui.Interfaces;
-import org.rsbot.script.wrappers.InterfaceComponent;
-import org.rsbot.script.wrappers.Item;
-import org.rsbot.script.wrappers.NPC;
-import org.rsbot.script.wrappers.Path;
+import org.rsbot.script.wrappers.*;
 
 import java.awt.*;
 
 @ScriptManifest(authors = { "Dwarfeh" }, keywords = { "fish, fisher, crayfish" }, name = "Dwarfeh's Fisher", description = "Fishes Crayfish", version = 1.0)
 public class Fisher extends Script implements MessageListener, PaintListener {
     int fishSpot = 6996;
-    int[] noDrop = { 13431, 995 };
+    int[] noDrop = { 13431, 995, 14664 };
     int fishCaught = 0;
 
     @Override
@@ -37,7 +34,8 @@ public class Fisher extends Script implements MessageListener, PaintListener {
         if (!Inventory.isFull() && Players.getLocal().getAnimation() != 10009) {
             NPC spot = NPCs.getNearest(fishSpot);
             if (spot != null) {
-                Camera.turnTo(spot);
+                //Camera.setAngle(Camera.getTileAngle(spot.getLocation()));
+                Camera.turnTo(new Tile(spot.getLocation().getX(), spot.getLocation().getY()));
                 if (spot.isOnScreen()) {
                     Point p = spot.getCentralPoint();
                     Mouse.hop(p);
@@ -48,7 +46,7 @@ public class Fisher extends Script implements MessageListener, PaintListener {
                     Task.sleep(2000);
                 }
                 if (!spot.isOnScreen()) {
-                    Camera.turnTo(spot);
+                    Camera.setAngle(Camera.getTileAngle(spot.getLocation()));
                     Camera.setPitch(0);
                     Path p = Walking.getPath(spot.getLocation());
                     p.traverse();

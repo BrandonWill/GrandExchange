@@ -8,6 +8,7 @@ import org.rsbot.script.methods.Menu;
 import org.rsbot.script.methods.*;
 import org.rsbot.script.methods.tabs.Inventory;
 import org.rsbot.script.methods.ui.Camera;
+import org.rsbot.script.methods.ui.Interfaces;
 import org.rsbot.script.wrappers.InterfaceComponent;
 import org.rsbot.script.wrappers.Item;
 import org.rsbot.script.wrappers.NPC;
@@ -25,21 +26,10 @@ public class Fisher extends Script implements MessageListener, PaintListener {
     protected int loop() {
         Mouse.setPrecisionSpeed(7);
         if (Interfaces.canContinue()) {
-            Interfaces.clickCont();
+            Interfaces.clickContinue();
         }
         if (Inventory.isFull()) {
-            //Inventory.dropAllExcept(13431, 995);
-            for (int i = 0; i < 28; i++) {
-                if (Inventory.getItemAt(i).getID() != noDrop[0] && Inventory.getItemAt(i).getID() != noDrop[1]) {
-                    Mouse.setPrecisionSpeed(1);
-                    Item fish = Inventory.getItemAt(i);
-                    Mouse.move(fish.getComponent().getAbsLocation());
-                    Mouse.click(false);
-                    if (Menu.isOpen()) {
-                        Menu.click("Drop");
-                    }
-                }
-            }
+            Inventory.dropAllExcept(noDrop);
         }
         while (Players.getLocal().getAnimation() == 10009 && !Interfaces.canContinue()) {
             sleep(500);
@@ -55,7 +45,7 @@ public class Fisher extends Script implements MessageListener, PaintListener {
                     if (Menu.isOpen() && Menu.contains("Cage")) {
                         Menu.click("Cage");
                     }
-                    Task.sleep(1500);
+                    Task.sleep(2000);
                 }
                 if (!spot.isOnScreen()) {
                     Camera.turnTo(spot);
@@ -73,7 +63,7 @@ public class Fisher extends Script implements MessageListener, PaintListener {
 
     public void messageReceived(MessageEvent e) {
         String text = e.getMessage().toLowerCase();
-        if (text.contains("catch a")) {
+        if (text.contains("catch a") && !text.contains("attempt")) {
             fishCaught++;
         }
     }
@@ -88,16 +78,6 @@ public class Fisher extends Script implements MessageListener, PaintListener {
         g.setColor(Color.white);
         g.setFont(new Font("Arial", 0, 9));
         g.drawString("Fish caught: " +fishCaught, 18, 85);
-    }
-
-    public static class Interfaces extends org.rsbot.script.methods.ui.Interfaces {
-
-        public static boolean clickCont() {
-            final InterfaceComponent cont = getContinueComponent();
-            Mouse.move(cont.getAbsLocation());
-            Mouse.click(true);
-            return cont != null && cont.isValid();
-        }
     }
 }
 
